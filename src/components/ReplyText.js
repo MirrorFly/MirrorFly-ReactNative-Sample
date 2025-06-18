@@ -6,6 +6,7 @@ import Pressable from '../common/Pressable';
 import Text from '../common/Text';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const ReplyText = props => {
    const { replyMsgItems, handleRemove } = props;
@@ -37,6 +38,11 @@ const ReplyText = props => {
          </Text>
       </View>
    );
+};
+
+ReplyText.propTypes = {
+   replyMsgItems: PropTypes.object,
+   handleRemove: PropTypes.func,
 };
 
 export default ReplyText;

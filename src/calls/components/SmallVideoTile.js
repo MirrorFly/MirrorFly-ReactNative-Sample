@@ -8,6 +8,7 @@ import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { useRoasterData } from '../../redux/reduxHook';
 import commonStyles from '../../styles/commonStyles';
 import VideoComponent from './VideoComponent';
+import PropTypes from 'prop-types';
 
 const SmallVideoTile = ({
    user,
@@ -21,8 +22,7 @@ const SmallVideoTile = ({
    const userId = getUserIdFromJid(user.fromJid);
    const userProfile = useRoasterData(userId) || {};
    const nickName = userProfile.nickName || userId || '';
-   let reconnectStatus =
-      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
+   let reconnectStatus = callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser;
 
    const renderVideoComponent = React.useMemo(() => {
       return <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={1} />;
@@ -30,7 +30,7 @@ const SmallVideoTile = ({
 
    return (
       <View style={styles.smallVideoWrapper}>
-         {!isVideoMuted && stream && stream?.video && !reconnectStatus && renderVideoComponent}
+         {!isVideoMuted && stream?.video && !reconnectStatus && renderVideoComponent}
          <View
             style={[
                commonStyles.p_10,
@@ -51,18 +51,16 @@ const SmallVideoTile = ({
                </View>
             )}
             {(isVideoMuted || reconnectStatus || (stream && !stream?.video)) && (
-               <>
-                  <View style={styles.smallVideoUserAvathar}>
-                     <Avathar
-                        userId={userId}
-                        width={50}
-                        height={50}
-                        backgroundColor={userProfile.colorCode}
-                        data={nickName}
-                        profileImage={userProfile.image}
-                     />
-                  </View>
-               </>
+               <View style={styles.smallVideoUserAvathar}>
+                  <Avathar
+                     userId={userId}
+                     width={50}
+                     height={50}
+                     backgroundColor={userProfile.colorCode}
+                     data={nickName}
+                     profileImage={userProfile.image}
+                  />
+               </View>
             )}
             <View>
                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.smallVideoUserName}>
@@ -72,6 +70,16 @@ const SmallVideoTile = ({
          </View>
       </View>
    );
+};
+
+SmallVideoTile.propTypes = {
+   user: PropTypes.object,
+   isLocalUser: PropTypes.bool,
+   isAudioMuted: PropTypes.bool,
+   isVideoMuted: PropTypes.bool,
+   stream: PropTypes.object,
+   isFrontCameraEnabled: PropTypes.bool,
+   callStatus: PropTypes.string,
 };
 
 export default SmallVideoTile;

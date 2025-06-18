@@ -21,6 +21,7 @@ import ChatHeaderSearch from './ChatHeaderSearch';
 import LastSeen from './LastSeen';
 import MakeCall from './MakeCall';
 import UserAvathar from './UserAvathar';
+import PropTypes from 'prop-types';
 
 function ChatHeader({ chatUser }) {
    const themeColorPalatte = useThemeColorPalatte();
@@ -98,6 +99,10 @@ function ChatHeader({ chatUser }) {
       </View>
    );
 }
+
+ChatHeader.propTypes = {
+   chatUser: PropTypes.string.isRequired,
+};
 
 export default React.memo(ChatHeader);
 

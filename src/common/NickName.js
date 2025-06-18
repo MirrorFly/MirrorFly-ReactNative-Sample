@@ -5,6 +5,7 @@ import { getStringSet } from '../localization/stringSet';
 import { useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import Text from './Text';
+import PropTypes from 'prop-types';
 
 function NickName({ userId, searchValue = '', index, style, colorCodeRequired = false, data = {} }) {
    const stringSet = getStringSet();
@@ -70,5 +71,14 @@ function NickName({ userId, searchValue = '', index, style, colorCodeRequired = 
       </>
    );
 }
+
+NickName.propTypes = {
+   userId: PropTypes.string,
+   searchValue: PropTypes.string,
+   index: PropTypes.number,
+   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   colorCodeRequired: PropTypes.bool,
+   data: PropTypes.object,
+};
 
 export default NickName;

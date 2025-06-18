@@ -17,6 +17,8 @@ import ApplicationColors from '../../config/appColors';
 import { capitalizeFirstLetter } from '../../helpers/chatHelpers';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
 import Store from '../../redux/store';
+import { CALL_HOLD_STATUS_MESSAGE } from '../../helpers/constants';
+import PropTypes from 'prop-types';
 
 let interval = '';
 const Timer = (props = {}) => {
@@ -81,6 +83,10 @@ const Timer = (props = {}) => {
       content = getCallDuration(timerTime);
    }
    return <Text style={styles.callTimeText}> {content} </Text>;
+};
+
+Timer.propTypes = {
+   callStatus: PropTypes.string,
 };
 
 export default Timer;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { I18nManager, Pressable, View } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect, TSpan, Text } from 'react-native-svg';
+import PropTypes from 'prop-types';
 
 const isRTL = I18nManager.isRTL;
 export const LeftArrowIcon = ({ color }) => {
@@ -20,6 +21,10 @@ export const LeftArrowIcon = ({ color }) => {
          />
       </Svg>
    );
+};
+
+LeftArrowIcon.propTypes = {
+   color: PropTypes.string,
 };
 
 export const RegiterPageIcon = () => {
@@ -564,6 +569,10 @@ export const AttachmentIcon = ({ color }) => {
    );
 };
 
+AttachmentIcon.propTypes = {
+   color: PropTypes.string,
+};
+
 export const ManigifyingGlass = ({ width, height }) => {
    return (
       <View>
@@ -579,6 +588,11 @@ export const ManigifyingGlass = ({ width, height }) => {
          </Svg>
       </View>
    );
+};
+
+ManigifyingGlass.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
 };
 
 export const CloseIcon = ({ width, height, color }) => {
@@ -611,6 +625,12 @@ export const CloseIcon = ({ width, height, color }) => {
    );
 };
 
+CloseIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   color: PropTypes.string,
+};
+
 export const MenuIcon = ({ width, height, color }) => {
    return (
       <Svg
@@ -629,7 +649,13 @@ export const MenuIcon = ({ width, height, color }) => {
    );
 };
 
-export const Chat_FABICON = ({ width, height, color }) => {
+MenuIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   color: PropTypes.string,
+};
+
+export const ChatFabIcon = ({ width, height, color }) => {
    return (
       <Svg
          xmlns="http://www.w3.org/2000/svg"
@@ -644,6 +670,12 @@ export const Chat_FABICON = ({ width, height, color }) => {
          />
       </Svg>
    );
+};
+
+ChatFabIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   color: PropTypes.string,
 };
 
 export const ProfileIcon = ({ width, height }) => {
@@ -677,6 +709,11 @@ export const ProfileIcon = ({ width, height }) => {
    );
 };
 
+ProfileIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+};
+
 export const SearchIcon = ({ width, height, color }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width={width || 18} height={height || 18} viewBox="0 0 18 18">
@@ -690,6 +727,12 @@ export const SearchIcon = ({ width, height, color }) => {
          </G>
       </Svg>
    );
+};
+
+SearchIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   color: PropTypes.string,
 };
 
 export const MailIcon = () => {
@@ -742,6 +785,12 @@ export const CallIcon = ({ width = '16.153', height = '16.11', fill = 'grey' }) 
          />
       </Svg>
    );
+};
+
+CallIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   fill: PropTypes.string,
 };
 
 export const StatusIcon = () => {
@@ -824,6 +873,12 @@ export const DownArrowIcon = ({ width, height, color }) => {
    );
 };
 
+DownArrowIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   color: PropTypes.string,
+};
+
 export const EditIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 16" id="vector" width="18" height={'18'}>
@@ -848,6 +903,13 @@ export const EmojiIcon = ({ color = '', width = '18', height = '18' }) => {
       </Svg>
    );
 };
+
+EmojiIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   color: PropTypes.string,
+};
+
 export const TickMarkIcon = props => {
    return (
       <Svg
@@ -870,6 +932,11 @@ export const TickMarkIcon = props => {
    );
 };
 
+TickMarkIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const SmileIcon = ({ color }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="19.667" height="19.657" viewBox="0 0 19.667 19.657">
@@ -881,6 +948,10 @@ export const SmileIcon = ({ color }) => {
          />
       </Svg>
    );
+};
+
+SmileIcon.propTypes = {
+   color: PropTypes.string,
 };
 
 export const MicIcon = props => {
@@ -899,6 +970,12 @@ export const MicIcon = props => {
          />
       </Svg>
    );
+};
+
+MicIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const SandTimer = () => {
@@ -1106,6 +1183,12 @@ export const LocationIcon = props => {
    );
 };
 
+LocationIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const LocationMarkerIcon = ({ width, height, color }) => {
    return (
       <Svg width={width || '20'} height={height || '20'} viewBox="0 0 20 20" version="1.1">
@@ -1120,6 +1203,12 @@ export const LocationMarkerIcon = ({ width, height, color }) => {
          </G>
       </Svg>
    );
+};
+
+LocationMarkerIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   color: PropTypes.string,
 };
 
 export const PreViewAddIcon = ({ color = '#fff' }) => {
@@ -1145,6 +1234,10 @@ export const PreViewAddIcon = ({ color = '#fff' }) => {
          </G>
       </Svg>
    );
+};
+
+PreViewAddIcon.propTypes = {
+   color: PropTypes.string,
 };
 
 export const DeleteBinIcon = ({ color }) => {
@@ -1174,6 +1267,10 @@ export const DeleteBinIcon = ({ color }) => {
          </G>
       </Svg>
    );
+};
+
+DeleteBinIcon.propTypes = {
+   color: PropTypes.string,
 };
 
 export const SendBlueIcon = props => {
@@ -1209,6 +1306,11 @@ export const SendBlueIcon = props => {
          </G>
       </Svg>
    );
+};
+
+SendBlueIcon.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
 };
 
 export const DeleteIcon = ({ color }) => {
@@ -1260,6 +1362,10 @@ export const DeleteIcon = ({ color }) => {
    );
 };
 
+DeleteIcon.propTypes = {
+   color: PropTypes.string,
+};
+
 export const ForwardIcon = ({ color }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
@@ -1288,6 +1394,10 @@ export const ForwardIcon = ({ color }) => {
          </G>
       </Svg>
    );
+};
+
+ForwardIcon.propTypes = {
+   color: PropTypes.string,
 };
 
 export const FavouriteIcon = () => {
@@ -1369,6 +1479,10 @@ export const ReplyIcon = ({ color }) => {
    );
 };
 
+ReplyIcon.propTypes = {
+   color: PropTypes.string,
+};
+
 export const MessageInfoIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="3.66" height="16.31" viewBox="0 0 3.66 16.31">
@@ -1403,6 +1517,12 @@ export const ClearTextIcon = props => {
    );
 };
 
+ClearTextIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const KeyboardIcon = ({ color }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="24px" fill={color || '#A5A5A8'}>
@@ -1411,7 +1531,12 @@ export const KeyboardIcon = ({ color }) => {
       </Svg>
    );
 };
-export const BackSpaceIcon = props => {
+
+KeyboardIcon.propTypes = {
+   color: PropTypes.string,
+};
+
+export const BackSpaceIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" height="19px" viewBox="0 0 24 24" width="20px" fill="#A5A5A8">
          <Path d="M0 0h24v24H0z" fill="none" />
@@ -1419,7 +1544,8 @@ export const BackSpaceIcon = props => {
       </Svg>
    );
 };
-export const FrontArrowIcon = ({ width = '6', height = '10', color = '#767676' }) => {
+
+export const FrontArrowIcon = ({ color = '#767676' }) => {
    return (
       <Svg
          xmlns="http://www.w3.org/2000/svg"
@@ -1438,6 +1564,10 @@ export const FrontArrowIcon = ({ width = '6', height = '10', color = '#767676' }
    );
 };
 
+FrontArrowIcon.propTypes = {
+   color: PropTypes.string,
+};
+
 export const BackArrowIconR = ({ height = '24', width = '24', fill = '#5f6368' }) => {
    return (
       <Svg
@@ -1450,6 +1580,12 @@ export const BackArrowIconR = ({ height = '24', width = '24', fill = '#5f6368' }
          <Path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
       </Svg>
    );
+};
+
+BackArrowIconR.propTypes = {
+   width: PropTypes.string,
+   height: PropTypes.string,
+   fill: PropTypes.string,
 };
 
 export const GalleryAllIcon = props => {
@@ -1474,7 +1610,11 @@ export const GalleryAllIcon = props => {
    );
 };
 
-export const ReportIcon = props => {
+GalleryAllIcon.propTypes = {
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+export const ReportIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="13.9" height="18.181" viewBox="0 0 13.9 18.181">
          <G id="Group_34213" data-name="Group 34213" transform="translate(-14.355 -625.501)">
@@ -1546,6 +1686,10 @@ export const BackArrowIcon = props => {
    );
 };
 
+BackArrowIcon.propTypes = {
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const PlayIcon = props => {
    return (
       <Svg
@@ -1565,6 +1709,11 @@ export const PlayIcon = props => {
          </G>
       </Svg>
    );
+};
+
+PlayIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const VideoIcon = props => {
@@ -1589,7 +1738,13 @@ export const VideoIcon = props => {
    );
 };
 
-export const ReplyUserIcon = props => {
+VideoIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+export const ReplyUserIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
          <G id="Group_14823" data-name="Group 14823" transform="translate(-55.563 -146.563)">
@@ -1638,6 +1793,12 @@ export const AudioMusicIcon = props => {
    );
 };
 
+AudioMusicIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const AudioMicIcon = ({ width = '8.842', height = '13.263', fill = '#fff' }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" id="mic1" width={width} height={height} viewBox="0 0 8.842 13.263">
@@ -1661,7 +1822,13 @@ export const AudioMicIcon = ({ width = '8.842', height = '13.263', fill = '#fff'
    );
 };
 
-export const PlayAudioIcon = props => {
+AudioMicIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   fill: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+export const PlayAudioIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="12" height="15" viewBox="0 0 12 15">
          <G id="play-arrow" transform="translate(0 8)">
@@ -1725,6 +1892,11 @@ export const PdfIcon = props => {
          </G>
       </Svg>
    );
+};
+
+PdfIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const ZipIcon = props => {
@@ -1797,6 +1969,11 @@ export const ZipIcon = props => {
    );
 };
 
+ZipIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const PPTIcon = props => {
    return (
       <Svg
@@ -1852,6 +2029,11 @@ export const PPTIcon = props => {
    );
 };
 
+PPTIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const XLSIcon = props => {
    return (
       <Svg
@@ -1900,6 +2082,11 @@ export const XLSIcon = props => {
    );
 };
 
+XLSIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const ApkIcon = props => {
    return (
       <Svg
@@ -1936,6 +2123,11 @@ export const ApkIcon = props => {
          </G>
       </Svg>
    );
+};
+
+ApkIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const DocIcon = props => {
@@ -1991,6 +2183,11 @@ export const DocIcon = props => {
    );
 };
 
+DocIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const DownloadIcon = ({ width, height, color }) => {
    return (
       <Svg width={width || 14} height={height || 14} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" id="vector">
@@ -2001,6 +2198,12 @@ export const DownloadIcon = ({ width, height, color }) => {
          />
       </Svg>
    );
+};
+
+DownloadIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const CameraSmallIcon = props => {
@@ -2032,6 +2235,12 @@ export const CameraSmallIcon = props => {
          </G>
       </Svg>
    );
+};
+
+CameraSmallIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const FolderIcon = () => {
@@ -2076,7 +2285,7 @@ export const VideoSmallIcon = ({ color }) => {
                      data-name="Path 13751"
                      d="M6.8,96.512H1.314A1.318,1.318,0,0,0,0,97.826v4.43a1.318,1.318,0,0,0,1.314,1.314H6.8a1.318,1.318,0,0,0,1.314-1.314v-4.43A1.31,1.31,0,0,0,6.8,96.512Z"
                      transform="translate(0 -96.512)"
-                     fill={color ? color : '#fff'}
+                     fill={color || '#fff'}
                   />
                </G>
             </G>
@@ -2087,13 +2296,17 @@ export const VideoSmallIcon = ({ color }) => {
                      data-name="Path 13752"
                      d="M343.778,123.868a.67.67,0,0,0-.223.092l-2.051,1.183v3.05l2.064,1.183a.781.781,0,0,0,1.078-.289.8.8,0,0,0,.105-.394v-4.062A.791.791,0,0,0,343.778,123.868Z"
                      transform="translate(-341.504 -123.847)"
-                     fill={color ? color : '#fff'}
+                     fill={color || '#fff'}
                   />
                </G>
             </G>
          </G>
       </Svg>
    );
+};
+
+VideoSmallIcon.propTypes = {
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const CheckBox = ({ color }) => {
@@ -2112,6 +2325,10 @@ export const CheckBox = ({ color }) => {
    );
 };
 
+CheckBox.propTypes = {
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const TickIcon = props => {
    return (
       <Svg
@@ -2128,6 +2345,11 @@ export const TickIcon = props => {
          />
       </Svg>
    );
+};
+
+TickIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const RightArrowIcon = props => {
@@ -2153,6 +2375,12 @@ export const RightArrowIcon = props => {
    );
 };
 
+RightArrowIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const DownloadCancel = props => {
    const { color = '#fff' } = props;
    return (
@@ -2166,6 +2394,10 @@ export const DownloadCancel = props => {
          />
       </Svg>
    );
+};
+
+DownloadCancel.propTypes = {
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const UploadIcon = props => {
@@ -2184,6 +2416,10 @@ export const UploadIcon = props => {
          </G>
       </Svg>
    );
+};
+
+UploadIcon.propTypes = {
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const ImageIcon = () => {
@@ -2213,6 +2449,7 @@ export const ImageIcon = () => {
       </Svg>
    );
 };
+
 export const ShareIcon = props => {
    return (
       <Svg
@@ -2232,7 +2469,12 @@ export const ShareIcon = props => {
    );
 };
 
-export const AudioPlay = props => {
+ShareIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+export const AudioPlay = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" viewBox="0 0 14 17">
          <G id="play-arrow" transform="translate(0 8)">
@@ -2248,7 +2490,7 @@ export const AudioPlay = props => {
    );
 };
 
-export const AudioPause = props => {
+export const AudioPause = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 12 16">
          <G transform="translate(-430 -478)">
@@ -2285,6 +2527,12 @@ export const ContactChatIcon = props => {
          </G>
       </Svg>
    );
+};
+
+ContactChatIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const DocumentChatIcon = props => {
@@ -2333,6 +2581,12 @@ export const DocumentChatIcon = props => {
    );
 };
 
+DocumentChatIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const UpArrowIcon = ({ width, height, color = '#000' }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width={width || '15'} height={height || '7'} viewBox="0 0 10 5.67">
@@ -2347,6 +2601,12 @@ export const UpArrowIcon = ({ width, height, color = '#000' }) => {
    );
 };
 
+UpArrowIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const BlockedIcon = ({ width = '16', height = '16', color = '#959595' }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 18 18">
@@ -2359,6 +2619,12 @@ export const BlockedIcon = ({ width = '16', height = '16', color = '#959595' }) 
          />
       </Svg>
    );
+};
+
+BlockedIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
 };
 
 export const CSVIcon = () => {
@@ -2478,6 +2744,11 @@ export const ContactInfoIcon = props => {
    );
 };
 
+ContactInfoIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const PhoneIcon = ({ width, height, color }) => {
    return (
       <Svg
@@ -2496,6 +2767,12 @@ export const PhoneIcon = ({ width, height, color }) => {
          </G>
       </Svg>
    );
+};
+
+PhoneIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
 };
 
 export const PhoneVideoIcon = ({ width, height, color }) => {
@@ -2517,6 +2794,12 @@ export const PhoneVideoIcon = ({ width, height, color }) => {
          />
       </Svg>
    );
+};
+
+PhoneVideoIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
 };
 
 export const ContactSendIcon = props => {
@@ -2550,6 +2833,12 @@ export const ContactSendIcon = props => {
    );
 };
 
+ContactSendIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const DoubleDownArrow = ({ width, height }) => {
    return (
       <Svg height={width || '30'} width={height || '30'} viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
@@ -2558,7 +2847,12 @@ export const DoubleDownArrow = ({ width, height }) => {
    );
 };
 
-export const DeleteRedBinIcon = props => {
+DoubleDownArrow.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+export const DeleteRedBinIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="19.66" height="19.66" viewBox="0 0 19.66 19.66">
          <G id="delete" transform="translate(-4095 -697)">
@@ -2624,7 +2918,7 @@ export const DeleteRedBinIcon = props => {
    );
 };
 
-export const SideArrowIcon = props => {
+export const SideArrowIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="5.338" height="9.65" viewBox="0 0 5.338 9.65">
          <G id="noun_Arrow_2094744" transform="translate(0.25 0.253)">
@@ -2659,7 +2953,11 @@ export const AudioCall = ({ fill = '#181818' }) => {
    );
 };
 
-export const EndCallIcon = props => {
+AudioCall.propTypes = {
+   fill: PropTypes.string,
+};
+
+export const EndCallIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="30.669" height="12.324" viewBox="0 0 30.669 12.324">
          <Path
@@ -2691,6 +2989,12 @@ export const AudioUnMuteIcon = ({ width, height, color }) => {
    );
 };
 
+AudioUnMuteIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const AudioMuteIcon = ({ width, height, color }) => {
    return (
       <Svg
@@ -2715,6 +3019,12 @@ export const AudioMuteIcon = ({ width, height, color }) => {
          </G>
       </Svg>
    );
+};
+
+AudioMuteIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
 };
 
 export const SpeakerEnableIcon = ({ width, height, color }) => {
@@ -2751,6 +3061,12 @@ export const SpeakerEnableIcon = ({ width, height, color }) => {
    );
 };
 
+SpeakerEnableIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const CallHeadsetIcon = ({ width, height, color }) => {
    return (
       <Svg
@@ -2768,7 +3084,13 @@ export const CallHeadsetIcon = ({ width, height, color }) => {
    );
 };
 
-export const VideoMuteIcon = props => {
+CallHeadsetIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
+export const VideoMuteIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="21.223" height="19.794" viewBox="0 0 21.223 19.794">
          <Path
@@ -2799,6 +3121,12 @@ export const VideoUnMuteIcon = ({ width, height, color }) => {
    );
 };
 
+VideoUnMuteIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const LayoutIcon = ({ width, height, color }) => {
    return (
       <Svg width={width || '9.889'} height={height || '10.25'} viewBox="0 0 9.889 10.25">
@@ -2812,7 +3140,13 @@ export const LayoutIcon = ({ width, height, color }) => {
    );
 };
 
-export const NotificationAudioIcon = ({ width, height, color }) => {
+LayoutIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
+export const NotificationAudioIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="15.562" height="15.51" viewBox="0 0 15.562 15.51">
          <Path
@@ -2829,7 +3163,7 @@ export const NotificationAudioIcon = ({ width, height, color }) => {
    );
 };
 
-export const IncomingCallAccept = ({ width, height, color }) => {
+export const IncomingCallAccept = ({ width, height }) => {
    return (
       <Svg
          id="phone-call-button"
@@ -2849,7 +3183,12 @@ export const IncomingCallAccept = ({ width, height, color }) => {
    );
 };
 
-export const IncomingCallEnd = ({ width, height, color }) => {
+IncomingCallAccept.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+export const IncomingCallEnd = ({ width, height }) => {
    return (
       <Svg
          xmlns="http://www.w3.org/2000/svg"
@@ -2871,7 +3210,12 @@ export const IncomingCallEnd = ({ width, height, color }) => {
    );
 };
 
-export const IncomingCallIcon = ({ width, height, color }) => {
+IncomingCallEnd.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+export const IncomingCallIcon = ({ width, height }) => {
    return (
       <Svg
          id="phone-call-button"
@@ -2889,6 +3233,11 @@ export const IncomingCallIcon = ({ width, height, color }) => {
          </G>
       </Svg>
    );
+};
+
+IncomingCallIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export const CallUpArrow1 = () => {
@@ -2940,6 +3289,10 @@ export const VideoCallIcon = ({ fill = '#181818' }) => {
    );
 };
 
+VideoCallIcon.propTypes = {
+   fill: PropTypes.string,
+};
+
 export const AddUserIcon = ({ color = '#181818' }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="18.169" height="18.134" viewBox="0 0 18.169 18.134">
@@ -2978,6 +3331,10 @@ export const AddUserIcon = ({ color = '#181818' }) => {
    );
 };
 
+AddUserIcon.propTypes = {
+   color: PropTypes.string,
+};
+
 export const ImageEditIcon = props => {
    const { width = '10', height = '10', color = '#ffffff' } = props;
    return (
@@ -3000,6 +3357,12 @@ export const ImageEditIcon = props => {
    );
 };
 
+ImageEditIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const TextEditIcon = props => {
    const { width = '10', height = '10', color = '#000' } = props;
    return (
@@ -3012,6 +3375,12 @@ export const TextEditIcon = props => {
          />
       </Svg>
    );
+};
+
+TextEditIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
 };
 
 export const ExitIcon = props => {
@@ -3042,6 +3411,12 @@ export const ExitIcon = props => {
    );
 };
 
+ExitIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const LogIcon = ({ size = 16, color = 'blue' }) => {
    return (
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -3053,6 +3428,11 @@ export const LogIcon = ({ size = 16, color = 'blue' }) => {
          <Path d="M14 15H18" stroke={color} strokeWidth="1" strokeLinecap="round" />
       </Svg>
    );
+};
+
+LogIcon.propTypes = {
+   size: PropTypes.number,
+   color: PropTypes.string,
 };
 
 export const ReportGroupIcon = props => {
@@ -3119,6 +3499,12 @@ export const ReportGroupIcon = props => {
    );
 };
 
+ReportGroupIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const ExpandIcon = ({ width = '19.896', height = '15.15', color = '#000' }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 25 25" id="vector">
@@ -3141,6 +3527,12 @@ export const ExpandIcon = ({ width = '19.896', height = '15.15', color = '#000' 
    );
 };
 
+ExpandIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const CollapseIcon = ({ width = '19.896', height = '15.15', color = '#000' }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 25 25" id="vector">
@@ -3156,6 +3548,12 @@ export const CollapseIcon = ({ width = '19.896', height = '15.15', color = '#000
          />
       </Svg>
    );
+};
+
+CollapseIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
 };
 
 export const AudioWhileIcon = () => {
@@ -3322,6 +3720,12 @@ export const BluetoothIcon = ({ width, height, color }) => {
    );
 };
 
+BluetoothIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const ChatsIcon = ({ width, height, color }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width={width || '20'} height={height || '18'} viewBox="0 0 20 18">
@@ -3365,6 +3769,11 @@ export const ChatsIcon = ({ width, height, color }) => {
          </G>
       </Svg>
    );
+};
+ChatsIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
 };
 
 export const ArchiveIcon = ({ width, height, color }) => {
@@ -3411,6 +3820,12 @@ export const ArchiveIcon = ({ width, height, color }) => {
    );
 };
 
+ArchiveIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const UnArchiveIcon = ({ width, height, color }) => {
    return (
       <Svg
@@ -3426,6 +3841,12 @@ export const UnArchiveIcon = ({ width, height, color }) => {
          />
       </Svg>
    );
+};
+
+UnArchiveIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
 };
 
 export const SettingsIcon = ({ width = '20.772', height = '20.772', fill = '#3276e2' }) => {
@@ -3453,6 +3874,12 @@ export const SettingsIcon = ({ width = '20.772', height = '20.772', fill = '#327
    );
 };
 
+SettingsIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   fill: PropTypes.string,
+};
+
 export const AlertIcon = ({ width = '15', height = '15', fill = 'red' }) => (
    <Svg width={width} height={height} viewBox="0 0 7 10">
       <Circle cx="3.5" cy="5" r="3.3" stroke="red" strokeWidth="0.7" fill="none" />
@@ -3461,6 +3888,12 @@ export const AlertIcon = ({ width = '15', height = '15', fill = 'red' }) => (
       </Text>
    </Svg>
 );
+
+AlertIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   fill: PropTypes.string,
+};
 
 export const ChatMuteIcon = ({ width, height }) => {
    return (
@@ -3484,6 +3917,11 @@ export const ChatMuteIcon = ({ width, height }) => {
    );
 };
 
+ChatMuteIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
 export const ChatUnMuteIcon = ({ width, height }) => {
    return (
       <Svg
@@ -3501,7 +3939,12 @@ export const ChatUnMuteIcon = ({ width, height }) => {
    );
 };
 
-export const NotificationSettingsIcon = ({ width, height }) => {
+ChatUnMuteIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+export const NotificationSettingsIcon = () => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18">
          <Path
@@ -3534,6 +3977,12 @@ export const LinkIcon = ({ width = '26.332', height = '11.132', color = '#fff' }
    );
 };
 
+LinkIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   color: PropTypes.string,
+};
+
 export const QuickChatIcon = ({ width = '20', height = '20', fill = '#181818' }) => {
    return (
       <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 29 29" id="vector">
@@ -3554,6 +4003,12 @@ export const QuickChatIcon = ({ width = '20', height = '20', fill = '#181818' })
          />
       </Svg>
    );
+};
+
+QuickChatIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   fill: PropTypes.string,
 };
 
 export const InfoIcon = ({ width = 18.2, height = 18.2, fill = '#181818', strokeWidth = 0.05 }) => {
@@ -3588,4 +4043,11 @@ export const InfoIcon = ({ width = 18.2, height = 18.2, fill = '#181818', stroke
          </G>
       </Svg>
    );
+};
+
+InfoIcon.propTypes = {
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+   fill: PropTypes.string,
+   strokeWidth: PropTypes.number,
 };

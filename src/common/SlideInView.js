@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Dimensions, StyleSheet, View } from 'react-native';
+import PropTypes from 'prop-types';
 
 const SlideInView = ({ visible, children }) => {
    const slideAnim = useRef(new Animated.Value(Dimensions.get('window').height)).current;
@@ -51,5 +52,10 @@ const styles = StyleSheet.create({
       elevation: 5,
    },
 });
+
+SlideInView.propTypes = {
+   visible: PropTypes.bool,
+   children: PropTypes.node,
+};
 
 export default SlideInView;

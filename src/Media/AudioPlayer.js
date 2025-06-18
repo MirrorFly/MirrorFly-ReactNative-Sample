@@ -12,6 +12,7 @@ import commonStyles from '../styles/commonStyles';
 import RNSlider from './RNSlider';
 import style from './styles';
 import { useFocusEffect } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 
 const PLAY_STATE_PAUSED = 'paused';
 const PLAY_STATE_PLAYING = 'playing';
@@ -20,6 +21,15 @@ export const soundRef = React.createRef();
 export const pauseAudio = () => {
    soundRef?.current?.pause?.();
    soundRef?.current?.updateState?.();
+};
+
+const propTypes = {
+   mediaStatus: PropTypes.string,
+   uri: PropTypes.string,
+   msgId: PropTypes.string,
+   media: PropTypes.shape({
+      duration: PropTypes.number, // Ensures media.duration is a number
+   }),
 };
 
 const AudioPlayer = props => {
@@ -41,12 +51,7 @@ const AudioPlayer = props => {
 
    React.useEffect(() => {
       let timeout = setInterval(() => {
-         if (
-            sound.current &&
-            sound?.current?.isLoaded() &&
-            playStateRef.current === PLAY_STATE_PLAYING &&
-            !sliderEditing.current
-         ) {
+         if (sound?.current?.isLoaded() && playStateRef.current === PLAY_STATE_PLAYING && !sliderEditing.current) { //NOSONAR
             sound.current.getCurrentTime(seconds => {
                setPlaySeconds(seconds);
             });
@@ -72,40 +77,49 @@ const AudioPlayer = props => {
    }, [appState]);
 
    React.useEffect(() => {
-      if (sound.current && playState === PLAY_STATE_PLAYING) {
-         if (soundRef.current && soundRef.current.msgId !== msgId) {
-            soundRef.current.pause();
-            soundRef?.current?.updateState?.();
-         }
+      const initializeSound = filepath => {
+         Sound.setCategory('Playback');
+         sound.current = new Sound(filepath, '', error => {
+            if (error) {
+               console.log(error, 'Play Error');
+               setPlayState(PLAY_STATE_PAUSED);
+            } else {
+               handleSoundLoaded();
+            }
+         });
+      };
+
+      const handleSoundLoaded = () => {
+         setPlayState(PLAY_STATE_PLAYING);
+         playStateRef.current = PLAY_STATE_PLAYING;
+         setTimeout(() => {
+            configureSoundRef();
+            sound.current.setCurrentTime(playSeconds);
+            sound.current.play(playComplete);
+         });
+      };
+
+      const configureSoundRef = () => {
          soundRef.current = sound.current;
          soundRef.current.msgId = msgId;
          soundRef.current.updateState = () => {
             setPlayState(PLAY_STATE_PAUSED);
          };
-         sound.current.play(playComplete);
-      } else {
-         const filepath = uri;
-         if (playState === PLAY_STATE_LOADING && filepath) {
-            Sound.setCategory('Playback');
-            sound.current = new Sound(filepath, '', error => {
-               if (error) {
-                  console.log(error, 'Play Error');
-                  setPlayState(PLAY_STATE_PAUSED);
-               } else {
-                  setPlayState(PLAY_STATE_PLAYING);
-                  playStateRef.current = PLAY_STATE_PLAYING;
-                  setTimeout(() => {
-                     soundRef.current = sound.current;
-                     soundRef.current.msgId = msgId;
-                     soundRef.current.updateState = () => {
-                        setPlayState(PLAY_STATE_PAUSED);
-                     };
-                     sound.current.setCurrentTime(playSeconds);
-                     sound.current.play(playComplete);
-                  });
-               }
-            });
+      };
+
+      const handlePlayStatePlaying = () => {
+         if (soundRef.current && soundRef.current.msgId !== msgId) {
+            soundRef.current.pause();
+            soundRef?.current?.updateState?.();
          }
+         configureSoundRef();
+         sound.current.play(playComplete);
+      };
+
+      if (sound.current && playState === PLAY_STATE_PLAYING) {
+         handlePlayStatePlaying();
+      } else if (playState === PLAY_STATE_LOADING && uri) {
+         initializeSound(uri);
       }
    }, [playState]);
 
@@ -144,12 +158,22 @@ const AudioPlayer = props => {
       setPlayState(PLAY_STATE_PAUSED);
    };
 
-   const getAudioTimeString = seconds => {
-      let h = Math.floor(seconds / 3600);
-      let m = Math.floor((seconds % 3600) / 60);
-      let s = Math.floor(seconds % 60);
+   const getAudioTimeString = totalSeconds => {
+      let h = Math.floor(totalSeconds / 3600);
+      let m = Math.floor((totalSeconds % 3600) / 60);
+      let s = Math.floor(totalSeconds % 60);
 
-      return (h > 0 ? (h < 10 ? `0${h}` : h) + ':' : '') + (m < 10 ? `0${m}` : m) + ':' + (s < 10 ? `0${s}` : s);
+      let hours = '';
+      if (h > 0) {
+         hours = h < 10 ? `0${h}` : h;
+         hours += ':';
+      }
+      let minutes = m < 10 ? `0${m}` : m;
+      let seconds = s < 10 ? `0${s}` : s;
+
+      minutes += ':';
+
+      return hours + minutes + seconds;
    };
 
    const playComplete = success => {
@@ -214,5 +238,7 @@ const AudioPlayer = props => {
       </View>
    );
 };
+
+AudioPlayer.propTypes = propTypes;
 
 export default AudioPlayer;

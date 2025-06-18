@@ -19,6 +19,7 @@ import { getChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import MessagePressable from './MessagePressable';
 import ReplyMessage from './ReplyMessage';
+import PropTypes from 'prop-types';
 
 const LocationCard = ({ chatUser, item, isSender }) => {
    const {
@@ -111,6 +112,13 @@ const LocationCard = ({ chatUser, item, isSender }) => {
       </View>
    );
 };
+
+LocationCard.propTypes = {
+   chatUser: PropTypes.string,
+   item: PropTypes.object,
+   isSender: PropTypes.bool,
+};
+
 export default LocationCard;
 
 const styles = StyleSheet.create({

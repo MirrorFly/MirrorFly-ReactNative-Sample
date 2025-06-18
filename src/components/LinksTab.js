@@ -10,6 +10,7 @@ import { getStringSet } from '../localization/stringSet';
 import { useLinkMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import { currentChatUser } from '../screens/ConversationScreen';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 function LinksTab({ chatUserId, loading }) {
    const stringSet = getStringSet();
@@ -30,8 +31,8 @@ function LinksTab({ chatUserId, loading }) {
    };
 
    const extractDomain = url => {
-      const match = url.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/i);
-      return match && match[1] ? match[1] : null; // Extracts "chatgpt.com" from URL
+      const match = url.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/i); //NOSONAR
+      return match?.[1] || null; // Extracts "chatgpt.com" from URL
    };
 
    const renderLinkTile = ({ item }) => {
@@ -112,6 +113,11 @@ function LinksTab({ chatUserId, loading }) {
       />
    );
 }
+
+LinksTab.propTypes = {
+   chatUserId: PropTypes.string,
+   loading: PropTypes.bool,
+};
 
 export default React.memo(LinksTab);
 

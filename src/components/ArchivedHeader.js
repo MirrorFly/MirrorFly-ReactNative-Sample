@@ -109,40 +109,41 @@ function ArchivedHeader() {
    };
 
    const renderSelectionHeader = React.useMemo(() => {
+      if (!filtered.length) {
+         return null;
+      }
+
       return (
-         Boolean(filtered.length) && (
-            <View style={[styles.container, commonStyles.p_15, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
-               <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <IconButton onPress={resetSelections}>
-                     <CloseIcon color={themeColorPalatte.iconColor} />
-                  </IconButton>
-                  <Text
-                     style={[
-                        commonStyles.textCenter,
-                        commonStyles.fontSize_18,
-                        commonStyles.pl_10,
-                        commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor),
-                     ]}>
-                     {filtered.length}
-                  </Text>
-               </View>
-               <View style={commonStyles.hstack}>
-                  {renderDeleteIcon()}
-                  <MuteChat filteredChats={filtered} />
-                  {renderUnArchiveIcon()}
-               </View>
-               {modalContent && <AlertModal {...modalContent} />}
+         <View style={[styles.container, commonStyles.p_15, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
+            <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+               <IconButton onPress={resetSelections}>
+                  <CloseIcon color={themeColorPalatte.iconColor} />
+               </IconButton>
+               <Text
+                  style={[
+                     commonStyles.textCenter,
+                     commonStyles.fontSize_18,
+                     commonStyles.pl_10,
+                     commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor),
+                  ]}>
+                  {filtered.length}
+               </Text>
             </View>
-         )
+            <View style={commonStyles.hstack}>
+               {renderDeleteIcon()}
+               <MuteChat filteredChats={filtered} />
+               {renderUnArchiveIcon()}
+            </View>
+            {modalContent && <AlertModal {...modalContent} />}
+         </View>
       );
    }, [filtered.length, modalContent, themeColorPalatte]);
 
    const renderScreenHeader = React.useMemo(() => {
-      return (
-         !Boolean(filtered.length) && (
-            <ScreenHeader isSearchable={false} title={stringSet.COMMON_TEXT.ARCHIVED_CHAT_HEADER_LABEL} />
-         )
-      );
+      if (filtered.length) {
+         return null;
+      }
+      return <ScreenHeader isSearchable={false} title={stringSet.COMMON_TEXT.ARCHIVED_CHAT_HEADER_LABEL} />;
    }, [filtered.length]);
 
    return (

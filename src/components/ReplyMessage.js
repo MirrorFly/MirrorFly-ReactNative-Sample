@@ -31,6 +31,7 @@ import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
 import { getAnySelectedChatMessages, useParentMessage, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
+import PropTypes from 'prop-types';
 
 function ReplyMessage(props) {
    const stringSet = getStringSet();
@@ -435,6 +436,11 @@ function ReplyMessage(props) {
       </Pressable>
    );
 }
+
+ReplyMessage.propTypes = {
+   message: PropTypes.object,
+   isSender: PropTypes.bool,
+};
 
 export default ReplyMessage;
 

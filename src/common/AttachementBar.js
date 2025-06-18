@@ -3,6 +3,11 @@ import { I18nManager, View } from 'react-native';
 import { Bar } from 'react-native-progress';
 import { useMediaProgress } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
+
+const propTypes = {
+   msgId: PropTypes.string,
+};
 
 function AttachementBar({ msgId }) {
    const progressData = useMediaProgress(msgId) || {};
@@ -36,5 +41,7 @@ function AttachementBar({ msgId }) {
       </View>
    );
 }
+
+AttachementBar.propTypes = propTypes;
 
 export default AttachementBar;

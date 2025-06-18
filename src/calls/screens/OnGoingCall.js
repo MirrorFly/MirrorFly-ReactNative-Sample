@@ -417,12 +417,10 @@ const OnGoingCall = () => {
          stream = largeVideoUserJid === localUserJid ? localStream : remoteStreams.stream;
       }
       //Check remote User is reconnecting state
-      let reconnectStatus =
-         callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && largeVideoUserJid !== localUserJid ? true : false;
+      let reconnectStatus = callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && largeVideoUserJid !== localUserJid;
       return callType === 'video' &&
          !remoteVideoMuted[largeVideoUserJid] &&
-         stream &&
-         stream.video &&
+         stream?.video &&
          !reconnectStatus &&
          callStatus.toLowerCase() !== CALL_STATUS_CONNECTING
          ? 'video'

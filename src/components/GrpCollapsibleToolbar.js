@@ -55,15 +55,6 @@ const propTypes = {
    getGroupParticipants: PropTypes.func,
 };
 
-const defaultProps = {
-   title: '',
-   toolbarMaxHeight: 400,
-   toolbarMinHeight: 60,
-   participants: [],
-   handleBackBtn: () => { },
-   imageToken: '',
-};
-
 const RenderItem = ({ item, index, onhandlePress, stringSet, themeColorPalatte }) => {
    // updating default values
    const handlePress = () => onhandlePress(item);
@@ -99,12 +90,32 @@ const RenderItem = ({ item, index, onhandlePress, stringSet, themeColorPalatte }
    );
 };
 
+RenderItem.propTypes = {
+   item: PropTypes.shape({
+      userId: PropTypes.string,
+      userProfile: PropTypes.object,
+      userType: PropTypes.string,
+   }),
+   index: PropTypes.number,
+   onhandlePress: PropTypes.func,
+   stringSet: PropTypes.shape({
+      INFO_SCREEN: PropTypes.shape({
+         ADMIN_LABEL_TEXT: PropTypes.string,
+      }),
+   }),
+   themeColorPalatte: PropTypes.shape({
+      primaryTextColor: PropTypes.string,
+      primaryColor: PropTypes.string,
+      dividerBg: PropTypes.string,
+   }),
+};
+
 const GrpCollapsibleToolbar = ({
    chatUser,
-   toolbarMaxHeight,
-   toolbarMinHeight,
+   toolbarMaxHeight = 400,
+   toolbarMinHeight = 60,
    handleBackBtn,
-   participants,
+   participants = [],
    getGroupParticipants,
    handleTakePhoto,
    handleFromGallery,
@@ -134,10 +145,10 @@ const GrpCollapsibleToolbar = ({
     * const scaledFontSize = ((baseFontSize * screenWidth) / 375) * pixelRatio;
     * */
 
-   const [grpoptionModelOpen, setOptionModelOpen] = React.useState(false);
+   const [grpoptionModelOpen, setGrpoptionModelOpen] = React.useState(false);
 
    const toggleOptionModel = () => {
-      setOptionModelOpen(val => !val);
+      setGrpoptionModelOpen(val => !val);
    };
 
    const translateBottomSlide = React.useRef(new Animated.Value(layout.height)).current;
@@ -206,7 +217,7 @@ const GrpCollapsibleToolbar = ({
       );
    };
 
-   const localUser = React.useMemo(() => participants.find(item => isLocalUser(item?.userId), [participants]));
+   const localUser = React.useMemo(() => participants?.find(item => isLocalUser(item?.userId), [participants]));
 
    const renderParticipants = () => {
       return (
@@ -620,7 +631,7 @@ const GrpCollapsibleToolbar = ({
                <Animated.View
                   style={[
                      styles.groupoptionModelContainer,
-                     { transform: [{ translateBottomSlide }], backgroundColor: themeColorPalatte.screenBgColor },
+                     { transform: [{ translateY: translateBottomSlide }], backgroundColor: themeColorPalatte.screenBgColor },
                   ]}>
                   <Text
                      style={[styles.groupoptionTitleText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
@@ -658,7 +669,6 @@ const GrpCollapsibleToolbar = ({
 };
 
 GrpCollapsibleToolbar.propTypes = propTypes;
-GrpCollapsibleToolbar.defaultProps = defaultProps;
 
 export default GrpCollapsibleToolbar;
 const styles = StyleSheet.create({

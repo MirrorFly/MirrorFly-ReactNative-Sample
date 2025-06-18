@@ -17,6 +17,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import CaptionContainer from './CaptionContainer';
 import ReplyMessage from './ReplyMessage';
+import PropTypes from 'prop-types';
 
 function VideoCard({ item, isSender }) {
    const themeColorPalatte = useThemeColorPalatte();
@@ -129,6 +130,11 @@ function VideoCard({ item, isSender }) {
       </View>
    );
 }
+
+VideoCard.propTypes = {
+   item: PropTypes.object,
+   isSender: PropTypes.bool,
+};
 
 export default VideoCard;
 

@@ -4,7 +4,7 @@ import { Animated, BackHandler, Dimensions, I18nManager, Pressable, StyleSheet, 
 import PagerView from 'react-native-pager-view';
 import { useDispatch } from 'react-redux';
 import { FloatingBtn } from '../common/Button';
-import { Chat_FABICON } from '../common/Icons';
+import { ChatFabIcon } from '../common/Icons';
 import Text from '../common/Text';
 import RecentCalls from '../components/RecentCall';
 import RecentChat from '../components/RecentChat';
@@ -163,7 +163,7 @@ function RecentChatScreen() {
          {tabBar}
          {renderPagerView}
          <FloatingBtn
-            icon={<Chat_FABICON color={themeColorPalatte.colorOnPrimary} />}
+            icon={<ChatFabIcon color={themeColorPalatte.colorOnPrimary} />}
             onPress={handleRoute(USERS_LIST_SCREEN)}
             color={themeColorPalatte.colorOnPrimary}
          />

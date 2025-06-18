@@ -288,7 +288,7 @@ const ProfileScreen = () => {
                         ]}
                         onPress={handleImage('big')}>
                         {Boolean(profileDetails?.image) && handleRenderAuthImage}
-                        {!Boolean(profileDetails?.image) && Boolean(profileDetails?.nickName?.trim()) && (
+                        {!profileDetails?.image && Boolean(profileDetails?.nickName?.trim()) && (
                            <Avathar
                               fontSize={60}
                               width={157}
@@ -297,7 +297,7 @@ const ProfileScreen = () => {
                               backgroundColor={themeColorPalatte.primaryColor}
                            />
                         )}
-                        {!Boolean(profileDetails?.image) && !Boolean(profileDetails?.nickName?.trim()) && (
+                        {!profileDetails?.image && !profileDetails?.nickName?.trim() && (
                            <Image
                               resizeMode="contain"
                               source={getImageSource(profileImage)}

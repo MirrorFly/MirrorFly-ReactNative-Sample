@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import VideoInfo from '../common/VideoInfo';
@@ -39,5 +40,26 @@ function PostView({ item }) {
       </View>
    );
 }
+
+PostView.propTypes = {
+   item: PropTypes.shape({
+      msgId: PropTypes.string,
+      msgBody: PropTypes.shape({
+         message_type: PropTypes.string,
+         media: PropTypes.shape({
+            androidWidth: PropTypes.number,
+            androidHeight: PropTypes.number,
+            local_path: PropTypes.string,
+            thumb_image: PropTypes.string,
+            file: PropTypes.shape({
+               fileDetails: PropTypes.shape({
+                  uri: PropTypes.string,
+                  thumb_image: PropTypes.string,
+               }),
+            }),
+         }),
+      }),
+   }),
+};
 
 export default React.memo(PostView);

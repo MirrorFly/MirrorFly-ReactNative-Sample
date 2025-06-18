@@ -7,6 +7,7 @@ import { CALL_STATUS_RECONNECT } from '../../helpers/constants';
 import { useRoasterData } from '../../redux/reduxHook';
 import PulseAnimatedView from './PulseAnimatedView';
 import VideoComponent from './VideoComponent';
+import PropTypes from 'prop-types';
 
 const BigVideoTile = ({
    userId,
@@ -18,8 +19,7 @@ const BigVideoTile = ({
    isFrontCameraEnabled,
    localUserJid,
 }) => {
-   let reconnectStatus =
-      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && userId !== localUserJid ? true : false;
+   let reconnectStatus = callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && userId !== localUserJid;
    const userProfile = useRoasterData(userId) || {};
    const nickName = userProfile.nickName || userId || '';
 
@@ -53,7 +53,7 @@ const BigVideoTile = ({
 
    return (
       <>
-         {!videoMuted && stream && stream?.video && !reconnectStatus && (
+         {!videoMuted && stream?.video && !reconnectStatus && (
             <Pressable
                onPress={onPressAnywhere}
                pressedStyle={{}}
@@ -70,7 +70,7 @@ const BigVideoTile = ({
                {renderAudioMuted}
             </Pressable>
          )}
-         {(videoMuted || reconnectStatus || !stream || !stream.video) && (
+         {(videoMuted || reconnectStatus || !stream?.video) && (
             <View style={styles.avatharWrapper}>
                {/* Pulse animation view here */}
                <PulseAnimatedView animateToValue={1.3} baseStyle={styles.avatharPulseAnimatedView} />
@@ -93,6 +93,17 @@ const BigVideoTile = ({
          )}
       </>
    );
+};
+
+BigVideoTile.propTypes = {
+   userId: PropTypes.string,
+   isAudioMuted: PropTypes.bool,
+   videoMuted: PropTypes.bool,
+   callStatus: PropTypes.string,
+   stream: PropTypes.object,
+   onPressAnywhere: PropTypes.func,
+   isFrontCameraEnabled: PropTypes.bool,
+   localUserJid: PropTypes.string,
 };
 
 export default BigVideoTile;

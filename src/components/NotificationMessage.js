@@ -5,6 +5,7 @@ import { getUserIdFromJid, groupNotifyStatus } from '../helpers/chatHelpers';
 import { messageNotificationTypes } from '../helpers/constants';
 import { getUserNameFromStore } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 function NotificationMessage(props) {
    const {
@@ -38,5 +39,15 @@ function NotificationMessage(props) {
       </View>
    );
 }
+
+NotificationMessage.propTypes = {
+   label: PropTypes.string,
+   messageObject: PropTypes.shape({
+      msgBody: PropTypes.object,
+      publisherId: PropTypes.string,
+      toUserJid: PropTypes.string,
+   }),
+   themeColorPalatte: PropTypes.object,
+};
 
 export default NotificationMessage;

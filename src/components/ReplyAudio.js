@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { AudioMicIcon, AudioMusicIcon, ClearTextIcon } from '../common/Icons';
@@ -45,12 +46,17 @@ const ReplyAudio = props => {
                <AudioMusicIcon width="14" height="14" color={'#767676'} />
             )}
             <Text style={{ paddingHorizontal: 8, color: '#000' }}>
-               {durationInMinutes}{' '}
-               {stringSet.COMMON_TEXT.AUDIO_MSG_TYPE}
+               {durationInMinutes} {stringSet.COMMON_TEXT.AUDIO_MSG_TYPE}
             </Text>
          </View>
       </View>
    );
+};
+
+ReplyAudio.propTypes = {
+   replyMsgItems: PropTypes.object,
+   handleRemove: PropTypes.func,
+   stringSet: PropTypes.object,
 };
 
 export default ReplyAudio;

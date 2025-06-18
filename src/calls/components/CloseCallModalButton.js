@@ -4,6 +4,7 @@ import IconButton from '../../common/IconButton';
 import { DownArrowIcon } from '../../common/Icons';
 import ApplicationColors from '../../config/appColors';
 import commonStyles from '../../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const CloseCallModalButton = ({ onPress }) => {
    return (
@@ -13,6 +14,10 @@ const CloseCallModalButton = ({ onPress }) => {
          </IconButton>
       </View>
    );
+};
+
+CloseCallModalButton.propTypes = {
+   onPress: PropTypes.func,
 };
 
 export default CloseCallModalButton;

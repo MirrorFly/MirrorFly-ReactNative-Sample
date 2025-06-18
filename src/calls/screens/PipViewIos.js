@@ -6,6 +6,7 @@ import Pressable from '../../common/Pressable';
 import { openCallModal } from '../../redux/callStateSlice';
 import { useRoasterData } from '../../redux/reduxHook';
 import PulseAnimationComponent from '../components/PulseAnimationComponent';
+import PropTypes from 'prop-types';
 
 function PipViewIos(props = {}) {
    const { userId } = props;
@@ -33,6 +34,10 @@ function PipViewIos(props = {}) {
       </View>
    );
 }
+
+PipViewIos.propTypes = {
+   userId: PropTypes.string,
+};
 
 export default PipViewIos;
 

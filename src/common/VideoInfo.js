@@ -7,6 +7,7 @@ import { getThumbBase64URL } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import { VIDEO_PLAYER_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const VideoInfo = props => {
    const navigation = useNavigation();
@@ -63,6 +64,11 @@ const VideoInfo = props => {
          )}
       </View>
    );
+};
+VideoInfo.propTypes = {
+   item: PropTypes.object,
+   selectedMedia: PropTypes.object,
+   audioOnly: PropTypes.bool,
 };
 
 const styles = StyleSheet.create({

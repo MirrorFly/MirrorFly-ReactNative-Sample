@@ -1,6 +1,7 @@
 import React from 'react';
 import Avathar from '../common/Avathar';
 import { useRoasterData } from '../redux/reduxHook';
+import PropTypes from 'prop-types';
 
 function UserAvathar({ type, userId, data = {}, ...props }) {
    const profile = useRoasterData(userId);
@@ -29,4 +30,10 @@ function UserAvathar({ type, userId, data = {}, ...props }) {
    );
 }
 
-export default React.memo(UserAvathar);
+UserAvathar.propTypes = {
+   type: PropTypes.string,
+   userId: PropTypes.string.isRequired,
+   data: PropTypes.object,
+};
+
+export default UserAvathar;

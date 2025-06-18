@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Animated, Easing } from 'react-native';
+import PropTypes from 'prop-types';
 
 const ProfilePictureWithPulse = ({ animateToValue, baseStyle, animationDuration = 1100, children }) => {
    const scaleValue = React.useRef(new Animated.Value(0.9)).current;
@@ -55,6 +56,13 @@ const ProfilePictureWithPulse = ({ animateToValue, baseStyle, animationDuration 
          {children}
       </Animated.View>
    );
+};
+
+ProfilePictureWithPulse.propTypes = {
+   animateToValue: PropTypes.number,
+   baseStyle: PropTypes.object,
+   animationDuration: PropTypes.number,
+   children: PropTypes.node,
 };
 
 export default ProfilePictureWithPulse;

@@ -3,6 +3,7 @@ import { MIX_BARE_JID } from '../helpers/constants';
 import { useRecentChatData } from '../redux/reduxHook';
 import IconButton from './IconButton';
 import { DeleteIcon } from './Icons';
+import PropTypes from 'prop-types';
 
 function RenderDeleteIcon({ onDelete }) {
     const recentChatData = useRecentChatData();
@@ -15,5 +16,9 @@ function RenderDeleteIcon({ onDelete }) {
         </IconButton>
     ) : null;
 }
+
+RenderDeleteIcon.propTypes = {
+    onDelete: PropTypes.func,
+};
 
 export default RenderDeleteIcon;

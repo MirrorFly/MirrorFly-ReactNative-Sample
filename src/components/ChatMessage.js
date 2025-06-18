@@ -22,6 +22,7 @@ import DeletedMessage from './DeletedMessage';
 import Message from './Message';
 import MessagePressable from './MessagePressable';
 import NotificationMessage from './NotificationMessage';
+import PropTypes from 'prop-types';
 
 function ChatMessage({ chatUser, item, showNickName, label, disablefunction = false }) {
    const dispatch = useDispatch();
@@ -71,13 +72,14 @@ function ChatMessage({ chatUser, item, showNickName, label, disablefunction = fa
       const messsageList = getChatMessages(userId);
       const isAnySelected = messsageList?.some?.(_item => _item.isSelected === 1);
       switch (true) {
-         case isAnySelected:
+         case isAnySelected: {
             const selectData = {
                chatUserId: getUserIdFromJid(chatUser),
                msgId,
             };
             dispatch(toggleMessageSelection(selectData));
             break;
+         }
          case onMessage &&
             is_downloaded === 2 &&
             is_uploading === 2 &&
@@ -192,6 +194,14 @@ function ChatMessage({ chatUser, item, showNickName, label, disablefunction = fa
       </>
    );
 }
+
+ChatMessage.propTypes = {
+   chatUser: PropTypes.string.isRequired,
+   item: PropTypes.object.isRequired,
+   showNickName: PropTypes.bool,
+   label: PropTypes.string,
+   disablefunction: PropTypes.bool,
+};
 
 export default React.memo(ChatMessage);
 

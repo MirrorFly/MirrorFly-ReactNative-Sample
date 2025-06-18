@@ -54,6 +54,7 @@ import {
 } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import EmojiOverlay from './EmojiPicker';
+import PropTypes from 'prop-types';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 const audioRecordRef = createRef();
@@ -207,7 +208,7 @@ function ChatInput({ chatUser }) {
             showToast('Recorded audio time is too short');
             onResetRecord();
             break;
-         case recordSecs && recordSecs >= 1000:
+         case recordSecs && recordSecs >= 1000: {
             onResetRecord();
             const updatedFile = {
                fileDetails: fileInfo[userId],
@@ -219,6 +220,7 @@ function ChatInput({ chatUser }) {
             };
             handleSendMsg(messageData);
             break;
+         }
          case Boolean(message.trim()) && Boolean(editMessageId):
             setMessage('');
             dispatch(toggleEditMessage(''));
@@ -528,7 +530,7 @@ function ChatInput({ chatUser }) {
                { backgroundColor: themeColorPalatte.screenBgColor, borderColor: themeColorPalatte.mainBorderColor },
             ]}>
             <View style={[styles.textInputContainer, { borderColor: themeColorPalatte.mainBorderColor }]}>
-               {Boolean(isAudioRecording) ? (
+               {isAudioRecording ? (
                   <View style={styles.hstack}>
                      <View style={{ height: 48, justifyContent: 'center' }}>
                         {showDeleteIcon ? (
@@ -572,6 +574,10 @@ function ChatInput({ chatUser }) {
       </>
    );
 }
+
+ChatInput.propTypes = {
+   chatUser: PropTypes.string.isRequired,
+};
 
 export default React.memo(ChatInput);
 

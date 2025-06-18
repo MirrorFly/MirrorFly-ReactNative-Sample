@@ -9,6 +9,7 @@ import { CloseIcon, LeftArrowIcon, SearchIcon } from './Icons';
 import MenuContainer from './MenuContainer';
 import Text from './Text';
 import TextInput from './TextInput';
+import PropTypes from 'prop-types';
 
 function ScreenHeader({
    title = '',
@@ -82,7 +83,7 @@ function ScreenHeader({
                returnKeyType="done"
                autoFocus={true}
             />
-            {text.trim() && (
+            {!!text.trim() && (
                <IconButton onPress={clearText}>
                   <CloseIcon color={themeColorPalatte.iconColor} />
                </IconButton>
@@ -148,6 +149,16 @@ function ScreenHeader({
       </View>
    );
 }
+
+ScreenHeader.propTypes = {
+   title: PropTypes.string,
+   menuItems: PropTypes.array,
+   onChangeText: PropTypes.func,
+   isSearchable: PropTypes.bool,
+   onCreateBtn: PropTypes.func,
+   isGroupInfoSrn: PropTypes.bool,
+   onBackAction: PropTypes.func,
+};
 
 export default ScreenHeader;
 

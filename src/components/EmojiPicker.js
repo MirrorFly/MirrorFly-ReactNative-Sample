@@ -10,6 +10,7 @@ import Text from '../common/Text';
 import { CHAT_INPUT } from '../helpers/constants';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const charFromUtf16 = utf16 => String.fromCodePoint(...utf16.split('-').map(u => '0x' + u));
 const charFromEmojiObj = obj => charFromUtf16(obj.unified);
@@ -62,6 +63,14 @@ const TabBarCustom = ({ navigationState, setIndex, state, setState, themeColorPa
    );
 };
 
+TabBarCustom.propTypes = {
+   navigationState: PropTypes.object,
+   setIndex: PropTypes.func,
+   state: PropTypes.string,
+   setState: PropTypes.func,
+   themeColorPalatte: PropTypes.object,
+};
+
 const EmojiCategory = ({ category, onSelect }) => {
    const emojis = emojisByCategory[category];
    const size = defaultEmojiSize;
@@ -88,6 +97,11 @@ const EmojiCategory = ({ category, onSelect }) => {
          numColumns={9}
       />
    );
+};
+
+EmojiCategory.propTypes = {
+   category: PropTypes.string,
+   onSelect: PropTypes.func,
 };
 
 const EmojiOverlay = ({ state, setState, onClose, visible, onSelect, place = '' }) => {
@@ -199,5 +213,14 @@ const styles = StyleSheet.create({
       padding: padding,
    },
 });
+
+EmojiOverlay.propTypes = {
+   state: PropTypes.string,
+   setState: PropTypes.func,
+   onClose: PropTypes.func,
+   visible: PropTypes.bool,
+   onSelect: PropTypes.func,
+   place: PropTypes.string,
+};
 
 export default EmojiOverlay;

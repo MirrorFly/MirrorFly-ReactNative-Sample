@@ -8,6 +8,7 @@ import { useAppState } from '../common/hooks';
 import { showToast } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
 import MediaControls, { PLAYER_STATES } from './media-controls';
+import { sdkLog } from '../SDK/utils';
 
 const VideoPlayer = () => {
    const {
@@ -145,6 +146,7 @@ const VideoPlayer = () => {
    };
 
    const onError = error => {
+      sdkLog('VIDEO_PLAY_BACK_ERROR', error);
       showToast(error?.error?.errorException);
       handlePause();
       setIsLoading(false);
@@ -174,7 +176,6 @@ const VideoPlayer = () => {
                paused={paused}
                controls={false}
                poster={videoUri}
-               posterResizeMode={'contain'}
                ref={videoPlayer}
                resizeMode={'contain'}
                source={{ uri: videoUri }}

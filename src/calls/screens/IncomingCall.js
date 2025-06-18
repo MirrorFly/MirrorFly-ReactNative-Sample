@@ -12,8 +12,9 @@ import { useRoasterData } from '../../redux/reduxHook';
 import commonStyles from '../../styles/commonStyles';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import GestureAnimationScreen from './GestureAnimationScreen';
+import PropTypes from 'prop-types';
 
-const IncomingCall = ({ userId, userJid, callStatus }) => {
+const IncomingCall = ({ userId, callStatus }) => {
    const {
       connectionState: { callType },
       callerUUID: activeCallUUID = '',
@@ -120,6 +121,11 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
          )}
       </ImageBackground>
    );
+};
+
+IncomingCall.propTypes = {
+   userId: PropTypes.string,
+   callStatus: PropTypes.string,
 };
 
 export default IncomingCall;

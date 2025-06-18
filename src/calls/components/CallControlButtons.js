@@ -28,6 +28,7 @@ import {
 } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
 import RNCallKeep from '../../customModules/CallKitModule';
+import PropTypes from 'prop-types';
 
 const sortAudioRoutes = (a, b) => {
    const nameA = a.name.toLowerCase();
@@ -125,7 +126,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, callType, handleVideoMu
    };
 
    const handleSelectedRoutes = () => {
-      if (audioRouteUpdateNeeded.current && RBSheetRef.current && RBSheetRef.current.state.modalVisible) {
+      if (audioRouteUpdateNeeded.current && RBSheetRef?.current?.state?.modalVisible) {
          RNCallKeep.getAudioRoutes().then(_routes => {
             /** sample data from 'getAudioRoutes' method
              * const sampleAudioRoutes = [
@@ -229,6 +230,13 @@ const CallControlButtons = ({ callStatus, handleEndCall, callType, handleVideoMu
          </RBSheet>
       </>
    );
+};
+
+CallControlButtons.propTypes = {
+   callStatus: PropTypes.string,
+   handleEndCall: PropTypes.func,
+   callType: PropTypes.string,
+   handleVideoMute: PropTypes.func,
 };
 
 export default React.memo(CallControlButtons);

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { CSVIcon, DocIcon, PPTIcon, PdfIcon, TXTIcon, XLSIcon, ZipIcon } from '../common/Icons';
@@ -16,7 +17,6 @@ function DocumentTab({ jid }) {
    const themeColorPalatte = useThemeColorPalatte();
    const { mergedMediaMessages: docsMessages, isLoading } = useMergedMediaMessages(jid, ['file']);
 
-   // const docsMessages = useMediaMessages(chatUserId, ['file']);
    const renderDocCountLabel = () => {
       return getMessageTypeCount(docsMessages, 'file') > 1
          ? getMessageTypeCount(docsMessages, 'file') + ' Documents'
@@ -143,6 +143,10 @@ function DocumentTab({ jid }) {
       />
    );
 }
+
+DocumentTab.propTypes = {
+   jid: PropTypes.string,
+};
 
 export default React.memo(DocumentTab);
 

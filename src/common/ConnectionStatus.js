@@ -5,7 +5,14 @@ import { CONNECTED, DISCONNECTED } from '../SDK/constants';
 
 function ConnectionStatus() {
     const connectionStatus = useXmppConnectionStatus();
-    const backgroundColor = connectionStatus === CONNECTED ? 'green' : connectionStatus === DISCONNECTED ? 'red' : 'orange';
+    let backgroundColor;
+    if (connectionStatus === CONNECTED) {
+        backgroundColor = 'green';
+    } else if (connectionStatus === DISCONNECTED) {
+        backgroundColor = 'red';
+    } else {
+        backgroundColor = 'orange';
+    }
     return <View style={[styles.container, { backgroundColor }]} />;
 }
 

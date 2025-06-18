@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import CheckBox from '@react-native-community/checkbox';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { debounce } from 'lodash-es';
@@ -104,6 +105,15 @@ const Header = React.memo(
    },
 );
 
+Header.propTypes = {
+   onCancelPressed: PropTypes.func,
+   onSearchPressed: PropTypes.func,
+   onSearch: PropTypes.func,
+   isSearching: PropTypes.bool,
+   searchText: PropTypes.string,
+   themeColorPalatte: PropTypes.object,
+};
+
 const ContactItem = ({
    name,
    userId,
@@ -207,7 +217,7 @@ const ContactItem = ({
                         numberOfLines={1}
                         ellipsizeMode="tail"
                         userId={userId}
-                        data={nickName}
+                        data={{ nickName }}
                         searchValue={searchText.trim()}
                         style={{
                            color: blockedStaus ? '' : themeColorPalatte.primaryTextColor,
@@ -230,6 +240,17 @@ const ContactItem = ({
          {modalContent && <AlertModal {...modalContent} />}
       </>
    );
+};
+
+ContactItem.propTypes = {
+   name: PropTypes.string,
+   userId: PropTypes.string,
+   userJid: PropTypes.string,
+   status: PropTypes.string,
+   handleItemSelect: PropTypes.func,
+   isSelected: PropTypes.bool,
+   isCheckboxAllowed: PropTypes.bool,
+   searchText: PropTypes.string,
 };
 
 const RecentChatSectionList = ({ data, handleChatSelect, selectedUsers, searchText }) => {
@@ -261,6 +282,13 @@ const RecentChatSectionList = ({ data, handleChatSelect, selectedUsers, searchTe
    );
 };
 
+RecentChatSectionList.propTypes = {
+   data: PropTypes.array,
+   handleChatSelect: PropTypes.func,
+   selectedUsers: PropTypes.object,
+   searchText: PropTypes.string,
+};
+
 const GroupChatSectionList = ({ data, handleChatSelect, selectedUsers, searchText }) => {
    return (
       <View style={styles.recentChatContiner}>
@@ -288,6 +316,13 @@ const GroupChatSectionList = ({ data, handleChatSelect, selectedUsers, searchTex
          </View>
       </View>
    );
+};
+
+GroupChatSectionList.propTypes = {
+   data: PropTypes.array,
+   handleChatSelect: PropTypes.func,
+   selectedUsers: PropTypes.object,
+   searchText: PropTypes.string,
 };
 
 const ContactsSectionList = ({
@@ -331,6 +366,15 @@ const ContactsSectionList = ({
    );
 };
 
+ContactsSectionList.propTypes = {
+   data: PropTypes.array,
+   handleChatSelect: PropTypes.func,
+   selectedUsers: PropTypes.object,
+   searchText: PropTypes.string,
+   showLoadMoreLoader: PropTypes.bool,
+   themeColorPalatte: PropTypes.object,
+};
+
 const SelectedUsersName = ({ users, onMessageSend, themeColorPalatte }) => {
    const userNames = React.useMemo(() => {
       if (Array.isArray(users) && users.length) {
@@ -354,6 +398,12 @@ const SelectedUsersName = ({ users, onMessageSend, themeColorPalatte }) => {
          )}
       </View>
    );
+};
+
+SelectedUsersName.propTypes = {
+   users: PropTypes.array,
+   onMessageSend: PropTypes.func,
+   themeColorPalatte: PropTypes.object,
 };
 
 const contactPaginationRefInitialValue = {

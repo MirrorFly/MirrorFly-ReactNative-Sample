@@ -6,6 +6,7 @@ import NickName from '../common/NickName';
 import Text from '../common/Text';
 import { getImageSource, getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const ReplyLocation = props => {
    const { replyMsgItems, handleRemove, stringSet } = props;
@@ -34,6 +35,12 @@ const ReplyLocation = props => {
          </View>
       </View>
    );
+};
+
+ReplyLocation.propTypes = {
+   replyMsgItems: PropTypes.object,
+   handleRemove: PropTypes.func,
+   stringSet: PropTypes.object,
 };
 
 export default ReplyLocation;

@@ -222,14 +222,15 @@ export const getSenderMessageObj = (dataObj, idx) => {
       case 'text':
          msgBody.message = message;
          break;
-      case 'location':
+      case 'location': {
          const { latitude, longitude } = location;
          msgBody.location = {
             latitude,
             longitude,
          };
          break;
-      case 'contact':
+      }
+      case 'contact': {
          const { name, phone_number, active_status } = contact;
          msgBody.contact = {
             name: name,
@@ -237,7 +238,8 @@ export const getSenderMessageObj = (dataObj, idx) => {
             active_status: active_status,
          };
          break;
-      default:
+      }
+      default: {
          let webWidth = 0,
             webHeight = 0,
             androidWidth = 0,
@@ -272,7 +274,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
             originalHeight,
             audioType: fileDetails?.audioType || '',
          };
-         break;
+      }
    }
 
    const retunVal = {
@@ -311,7 +313,7 @@ export const handleSendMsg = async (obj = {}) => {
    const isMuted = await getMuteStatus(chatUser);
    handleConversationScollToBottom();
    switch (messageType) {
-      case 'messageEdit':
+      case 'messageEdit': {
          const { msgBody: { media: { caption = '' } = {} } = {} } = getChatMessage(userId, originalMsgId);
          const editMessageId = SDK.randomString(8, 'BA');
          const editObj = caption
@@ -322,7 +324,8 @@ export const handleSendMsg = async (obj = {}) => {
          store.dispatch(editRecentChatItem(editObj));
          SDK.editTextOrCaptionMessage({ ...editObj, originalMessageId: originalMsgId, toJid: chatUser });
          break;
-      case 'text':
+      }
+      case 'text': {
          const dataObj = {
             jid: chatUser,
             msgType: 'text',
@@ -338,6 +341,7 @@ export const handleSendMsg = async (obj = {}) => {
          store.dispatch(addRecentChatItem(senderObj));
          SDK.sendTextMessage(chatUser, message, msgId, replyTo, { broadCastId1: SDK.randomString(8, 'BA') });
          break;
+      }
       case 'media':
          await parseAndSendMessage(
             obj,
@@ -347,7 +351,7 @@ export const handleSendMsg = async (obj = {}) => {
             replyTo,
          );
          break;
-      case 'contact':
+      case 'contact': {
          const updatedContacts = obj.contacts.map(c => ({
             ...c,
             msgId: SDK.randomString(8, 'BA'),
@@ -370,10 +374,11 @@ export const handleSendMsg = async (obj = {}) => {
          }
          SDK.sendContactMessage(chatUser, updatedContacts, replyTo, { broadCastIdContact: SDK.randomString(8, 'BA') });
          break;
-      case 'location':
+      }
+      case 'location': {
          const { latitude, longitude } = location;
          if (latitude && longitude) {
-            const dataObj = {
+            const _dataObj = {
                jid: chatUser,
                msgType: messageType,
                chatType: MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : 'chat',
@@ -384,15 +389,16 @@ export const handleSendMsg = async (obj = {}) => {
                replyTo: replyTo,
                isMuted,
             };
-            const senderObj = getSenderMessageObj(dataObj);
-            senderObj.archiveSetting = getArchive();
-            store.dispatch(addChatMessageItem(senderObj));
-            store.dispatch(addRecentChatItem(senderObj));
+            const _senderObj = getSenderMessageObj(_dataObj);
+            _senderObj.archiveSetting = getArchive();
+            store.dispatch(addChatMessageItem(_senderObj));
+            store.dispatch(addRecentChatItem(_senderObj));
             SDK.sendLocationMessage(chatUser, latitude, longitude, msgId, replyTo, {
                broadCastIdLocation: SDK.randomString(8, 'BA'),
             });
          }
          break;
+      }
    }
 };
 
@@ -517,8 +523,12 @@ export const getUserProfileFromSDK = userId => {
 };
 
 export const getUserSettings = async (iq = false) => {
-   const { data: { archive = 0 } = {} } = await SDK.getUserSettings?.(iq);
-   store.dispatch(toggleArchiveSetting(Number(archive)));
+   try {
+      const { data: { archive = 0 } = {} } = await SDK.getUserSettings(iq);
+      store.dispatch(toggleArchiveSetting(Number(archive)));
+   } catch (error) {
+      mflog('Failed to get user settings', error);
+   }
 };
 
 export const updateNotificationSettings = async () => {
@@ -611,4 +621,8 @@ export const mediaCompress = async ({ uri, type, quality }) => {
    } catch (error) {
       mflog('Failed to compress video', error);
    }
+};
+
+export const sdkLog = (...args) => {
+   SDK.mflog('UIKIT', args);
 };

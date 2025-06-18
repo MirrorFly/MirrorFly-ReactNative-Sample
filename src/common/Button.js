@@ -6,6 +6,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import IconButton from './IconButton';
 import { MenuIcon } from './Icons';
 import Pressable from './Pressable';
+import PropTypes from 'prop-types';
 
 const isRTL = I18nManager.isRTL;
 const styles = StyleSheet.create({
@@ -41,6 +42,17 @@ const styles = StyleSheet.create({
    },
 });
 
+/**
+ * FloatingBtn Component
+ *
+ * A floating button component that renders a pressable button with customizable styles and an icon.
+ *
+ * @param {Object} props - The properties passed to the component.
+ * @param {React.ReactNode} props.icon - The icon to be displayed inside the button.
+ * @param {Object} [props.style] - Additional styles to customize the button.
+ * @param {Object} [props.themeColorPalatte] - The theme color palette object, used to style the button.
+ * @returns {JSX.Element} A floating button component.
+ */
 export const FloatingBtn = props => {
    const themeColorPalatte = useThemeColorPalatte();
    return (
@@ -55,6 +67,17 @@ export const FloatingBtn = props => {
    );
 };
 
+FloatingBtn.propTypes = {
+   icon: PropTypes.node,
+   style: PropTypes.object,
+   onPress: PropTypes.func,
+};
+
+const menuPops = {
+   color: PropTypes.string,
+   onPress: PropTypes.func,
+};
+
 export const MenuIconBtn = ({ color, onPress }) => {
    return (
       <IconButton onPress={onPress}>
@@ -62,6 +85,8 @@ export const MenuIconBtn = ({ color, onPress }) => {
       </IconButton>
    );
 };
+
+MenuIconBtn.propTypes = menuPops;
 
 export const SendBtn = React.memo(props => {
    return (

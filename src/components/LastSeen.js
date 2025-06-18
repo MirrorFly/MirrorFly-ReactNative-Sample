@@ -17,6 +17,7 @@ import {
    useXmppConnectionStatus,
 } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const LastSeen = ({ userJid = '', style }) => {
    const userId = getUserIdFromJid(userJid);
@@ -95,6 +96,11 @@ const LastSeen = ({ userJid = '', style }) => {
          ) : null}
       </>
    );
+};
+
+LastSeen.propTypes = {
+   userJid: PropTypes.string,
+   style: PropTypes.object,
 };
 
 export default LastSeen;

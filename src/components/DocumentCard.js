@@ -10,6 +10,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 import { ChatConversationHighlightedText } from './TextCard';
+import PropTypes from 'prop-types';
 
 const DocumentMessageCard = ({ item, isSender }) => {
    const {
@@ -118,6 +119,27 @@ const DocumentMessageCard = ({ item, isSender }) => {
       </View>
    );
 };
+
+DocumentMessageCard.propTypes = {
+   item: PropTypes.shape({
+      createdAt: PropTypes.string,
+      msgId: PropTypes.string,
+      msgStatus: PropTypes.string,
+      msgBody: PropTypes.shape({
+         fileDetails: PropTypes.object,
+         media: PropTypes.shape({
+            is_uploading: PropTypes.bool,
+            is_downloaded: PropTypes.bool,
+            fileName: PropTypes.string,
+            file_size: PropTypes.number,
+            local_path: PropTypes.string,
+         }),
+      }),
+      replyTo: PropTypes.string,
+   }),
+   isSender: PropTypes.bool,
+};
+
 export default React.memo(DocumentMessageCard);
 
 const styles = StyleSheet.create({

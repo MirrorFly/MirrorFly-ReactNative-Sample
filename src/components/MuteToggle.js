@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import CustomSwitch from '../common/CustomSwitch';
@@ -48,6 +49,10 @@ const MuteToggle = ({ chatUser }) => {
          />
       </>
    );
+};
+
+MuteToggle.propTypes = {
+   chatUser: PropTypes.string.isRequired,
 };
 
 export default MuteToggle;

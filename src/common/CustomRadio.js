@@ -5,6 +5,13 @@ import { showNetWorkToast } from '../helpers/chatHelpers';
 import IconButton from './IconButton';
 import { TickIcon } from './Icons';
 import { useNetworkStatus } from './hooks';
+import PropTypes from 'prop-types';
+
+const propTypes = {
+   value: PropTypes.bool,
+   onToggle: PropTypes.func,
+   disabled: PropTypes.bool,
+};
 
 function CustomRadio({ value = false, onToggle, disabled = false }) {
    const isNetWorkConnected = useNetworkStatus();
@@ -41,5 +48,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#767577',
    },
 });
+
+CustomRadio.propTypes = propTypes;
 
 export default CustomRadio;

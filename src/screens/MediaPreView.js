@@ -33,9 +33,8 @@ import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
 import RootNavigation from '../Navigation/rootNavigation';
 import { useThemeColorPalatte } from '../redux/reduxHook';
-import { mediaCompress } from '../SDK/utils';
+import { mediaCompress, sdkLog } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
-import { mflog } from '../uikitMethods';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
 
 function MediaPreView() {
@@ -102,7 +101,7 @@ function MediaPreView() {
                quality: 'medium',
                signal: abortControllerRef.current?.signal, // Pass the abort signal
             });
-            console.log('response ==> ', response);
+
             if (!isActive || abortControllerRef.current?.signal.aborted) {
                return; // ✅ Stop after compression if needed
             }
@@ -142,9 +141,10 @@ function MediaPreView() {
          } catch (error) {
             console.log('error ==> ', error);
             if (error.name === 'AbortError') {
+               sdkLog('Compression aborted.');
                return;
             }
-            mflog('Compression error ==> ', error);
+            sdkLog('Compression error ==> ', error);
          }
       }
 
@@ -152,7 +152,8 @@ function MediaPreView() {
          return; // ✅ Stop before updating state
       }
 
-      sortedMedia = sortedMedia.sort((a, b) => a.index - b.index).map(item => item.compressedData);
+      sortedMedia.sort((a, b) => a.index - b.index);
+      sortedMedia = sortedMedia.map(item => item.compressedData);
       setComponentSelectedImages(sortedMedia);
 
       setLoading(false);

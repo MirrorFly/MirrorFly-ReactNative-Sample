@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { ClearTextIcon, ContactChatIcon } from '../common/Icons';
@@ -39,6 +40,12 @@ const ReplyContact = props => {
          </View>
       </View>
    );
+};
+
+ReplyContact.propTypes = {
+   replyMsgItems: PropTypes.object,
+   handleRemove: PropTypes.func,
+   stringSet: PropTypes.object,
 };
 
 export default ReplyContact;

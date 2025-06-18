@@ -5,6 +5,7 @@ import {
     ViewStyle, // NOSONAR
 } from 'react-native';
 import commonStyles, { pressableStyles } from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 /**
  * @typedef {Object} CustomProps
@@ -34,6 +35,15 @@ const MessagePressable = ({ children, forcePress = false, contentContainerStyle,
          )}
       </RNPressable>
    );
+};
+
+MessagePressable.propTypes = {
+   children: PropTypes.node,
+   forcePress: PropTypes.bool,
+   contentContainerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   onPress: PropTypes.func,
+   onLongPress: PropTypes.func,
+   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
 export default React.memo(MessagePressable);

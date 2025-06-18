@@ -5,6 +5,7 @@ import NickName from '../common/NickName';
 import { getCurrentChatUser, getUserIdFromJid } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const ReplyDeleted = props => {
    const stringSet = getStringSet();
@@ -33,6 +34,10 @@ const ReplyDeleted = props => {
          </Text>
       </View>
    );
+};
+
+ReplyDeleted.propTypes = {
+   handleRemove: PropTypes.func,
 };
 
 export default ReplyDeleted;

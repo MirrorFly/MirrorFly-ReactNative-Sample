@@ -1,6 +1,7 @@
 import React from 'react';
 import { I18nManager, TextInput as RNTextInput, StyleSheet } from 'react-native';
 import { useFontFamily } from '../redux/reduxHook';
+import PropTypes from 'prop-types';
 
 /**
  * @typedef {Object} CustomProps
@@ -38,6 +39,12 @@ const TextInput = ({ style = {}, inputRef = {}, placeholder = '', ...props }) =>
    placeholder = isRTL ? placeholder.replace('...', '') + '...' : placeholder;
 
    return <RNTextInput style={processedContentContainerStyle} ref={inputRef} placeholder={placeholder} {...props} />;
+};
+
+TextInput.propTypes = {
+   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   inputRef: PropTypes.object,
+   placeholder: PropTypes.string,
 };
 
 export default TextInput;

@@ -6,6 +6,7 @@ import Text from '../common/Text';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getStringSet } from '../localization/stringSet';
+import PropTypes from 'prop-types';
 
 function GalleryHeader(props) {
    const stringSet = getStringSet();
@@ -13,7 +14,7 @@ function GalleryHeader(props) {
    const { selectedImages = [], checkBox = false, setCheckbox, onDone = () => {} } = props;
 
    const handlingBackBtn = () => {
-      props?.onhandleBack && props?.onhandleBack();
+      props?.onhandleBack();
    };
 
    const handleOnPress = () => {
@@ -54,6 +55,15 @@ function GalleryHeader(props) {
       </View>
    );
 }
+
+GalleryHeader.propTypes = {
+   selectedImages: PropTypes.object,
+   checkBox: PropTypes.bool,
+   setCheckbox: PropTypes.func,
+   onhandleBack: PropTypes.func,
+   onDone: PropTypes.func,
+   title: PropTypes.string,
+};
 
 export default GalleryHeader;
 

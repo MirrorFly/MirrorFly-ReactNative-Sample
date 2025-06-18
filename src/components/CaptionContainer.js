@@ -4,56 +4,67 @@ import Text from '../common/Text';
 import { getMessageStatus } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const CaptionContainer = ({ caption, msgStatus, timeStamp, isSender, editMessageId }) => {
    const themeColorPalatte = useThemeColorPalatte();
+   if (!caption) {
+      return null;
+   }
+
    return (
-      Boolean(caption) && (
-         <View style={styles.captionContainer}>
-            <Text
-               style={{
-                  ...commonStyles.textColor(
-                     isSender
-                        ? themeColorPalatte.chatSenderPrimaryTextColor
-                        : themeColorPalatte.chatReceiverPrimaryTextColor,
-                  ),
-                  ...styles.captionText,
-               }}>
-               {caption}
-            </Text>
-            <View style={styles.messgeStatusAndTimestampWithCaption}>
-               {isSender && getMessageStatus(msgStatus)}
-               {editMessageId && (
-                  <Text
-                     style={[
-                        styles.timeStampText,
-                        { paddingLeft: 4 },
-                        commonStyles.textColor(
-                           isSender
-                              ? themeColorPalatte.chatSenderSecondaryTextColor
-                              : themeColorPalatte.chatReceiverSecondaryTextColor,
-                        ),
-                     ]}>
-                     Edited
-                  </Text>
-               )}
+      <View style={styles.captionContainer}>
+         <Text
+            style={{
+               ...commonStyles.textColor(
+                  isSender
+                     ? themeColorPalatte.chatSenderPrimaryTextColor
+                     : themeColorPalatte.chatReceiverPrimaryTextColor,
+               ),
+               ...styles.captionText,
+            }}>
+            {caption}
+         </Text>
+         <View style={styles.messgeStatusAndTimestampWithCaption}>
+            {isSender && getMessageStatus(msgStatus)}
+            {editMessageId && (
                <Text
                   style={[
                      styles.timeStampText,
+                     { paddingLeft: 4 },
                      commonStyles.textColor(
                         isSender
                            ? themeColorPalatte.chatSenderSecondaryTextColor
                            : themeColorPalatte.chatReceiverSecondaryTextColor,
                      ),
                   ]}>
-                  {timeStamp}
+                  Edited
                </Text>
-            </View>
+            )}
+            <Text
+               style={[
+                  styles.timeStampText,
+                  commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderSecondaryTextColor
+                        : themeColorPalatte.chatReceiverSecondaryTextColor,
+                  ),
+               ]}>
+               {timeStamp}
+            </Text>
          </View>
-      )
+      </View>
    );
 };
 export default CaptionContainer;
+
+CaptionContainer.propTypes = {
+   caption: PropTypes.string,
+   msgStatus: PropTypes.string,
+   timeStamp: PropTypes.string,
+   isSender: PropTypes.bool,
+   editMessageId: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
    captionContainer: {

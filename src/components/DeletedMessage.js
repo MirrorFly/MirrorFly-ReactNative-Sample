@@ -10,6 +10,7 @@ import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
 import { getChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import MessagePressable from './MessagePressable';
+import PropTypes from 'prop-types';
 
 const DeletedMessage = ({ chatUser, item, isSender }) => {
    const stringSet = getStringSet();
@@ -85,6 +86,16 @@ const DeletedMessage = ({ chatUser, item, isSender }) => {
          )}
       </Pressable>
    );
+};
+
+DeletedMessage.propTypes = {
+   chatUser: PropTypes.string,
+   item: PropTypes.shape({
+      isSelected: PropTypes.number,
+      msgId: PropTypes.string,
+      createdAt: PropTypes.string,
+   }),
+   isSender: PropTypes.bool,
 };
 
 export default DeletedMessage;

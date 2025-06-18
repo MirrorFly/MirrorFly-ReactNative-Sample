@@ -14,6 +14,7 @@ import {
 } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
+import { sdkLog } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
 import { mflog } from '../uikitMethods';
 import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
@@ -29,7 +30,7 @@ const GalleryPhotos = () => {
    const [loading, setLoading] = React.useState(false);
    const [hasNextPage, setHasNextPage] = React.useState(false);
    const [endCursor, setEndCursor] = React.useState(null);
-   const [checkBox, setCheckbox] = React.useState(false);
+   const [isCheckBoxSelected, setIsCheckBoxSelected] = React.useState(false);
    const [selectedImages, setSelectedImages] = React.useState({});
 
    const deviceWidth = Dimensions.get('window').width;
@@ -59,12 +60,12 @@ const GalleryPhotos = () => {
       return () => {
          backHandler.remove();
       };
-   }, [selectedImages, checkBox]);
+   }, [selectedImages, isCheckBoxSelected]);
 
    const getTitle = () => {
       if (Object.keys(selectedImages).length) {
          return Object.keys(selectedImages).length + '/10' + ' ' + stringSet.CHAT_SCREEN_ATTACHMENTS.SELECTED;
-      } else if (checkBox) {
+      } else if (isCheckBoxSelected) {
          return stringSet.CHAT_SCREEN_ATTACHMENTS.GALLERY_TAP_SELECT_HEADER;
       } else {
          return grpView;
@@ -74,9 +75,9 @@ const GalleryPhotos = () => {
    const handleBackBtn = () => {
       if (Object.keys(selectedImages).length !== 0) {
          setSelectedImages({});
-         setCheckbox(false);
-      } else if (checkBox) {
-         setCheckbox(false);
+         setIsCheckBoxSelected(false);
+      } else if (isCheckBoxSelected) {
+         setIsCheckBoxSelected(false);
       } else {
          navigation.goBack();
       }
@@ -97,6 +98,7 @@ const GalleryPhotos = () => {
          preScreen: GALLERY_PHOTOS_SCREEN,
          selectedImages: [transformedArray],
       });
+      sdkLog('navigation');
    };
 
    const handleSelectImage = React.useCallback(
@@ -145,14 +147,14 @@ const GalleryPhotos = () => {
       return (
          <GalleryHeader
             title={getTitle()}
-            setCheckbox={setCheckbox}
-            checkBox={checkBox}
+            setCheckbox={setIsCheckBoxSelected}
+            checkBox={isCheckBoxSelected}
             selectedImages={selectedImages}
             onhandleBack={handleBackBtn}
             onDone={handleFinishSelection}
          />
       );
-   }, [checkBox, selectedImages]);
+   }, [isCheckBoxSelected, selectedImages]);
 
    const memoizedData = React.useMemo(() => photos, [photos]);
 
@@ -203,10 +205,11 @@ const GalleryPhotos = () => {
       }
    };
 
+   /**
    const removeInvalidImage = uri => {
       setPhotos(prevPhotos => prevPhotos.filter(item => item.node.image.uri !== uri));
    };
-
+   */
    const renderItem = ({ item }) => {
       const isImageSelected = selectedImages[item?.node?.image.uri];
 
@@ -219,13 +222,13 @@ const GalleryPhotos = () => {
                }}
                delayLongPress={200}
                onPress={() => {
-                  setCheckbox(false);
-                  Object.keys(selectedImages).length === 0 && !checkBox
+                  setIsCheckBoxSelected(false);
+                  Object.keys(selectedImages).length === 0 && !isCheckBoxSelected
                      ? handleMedia(item.node)
                      : handleSelectImage(item.node);
                }}
                onLongPress={() => {
-                  setCheckbox(false);
+                  setIsCheckBoxSelected(false);
                   handleSelectImage(item.node);
                }}>
                <Image

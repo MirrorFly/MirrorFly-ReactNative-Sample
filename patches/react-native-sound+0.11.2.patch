@@ -1,0 +1,17 @@
+diff --git a/node_modules/react-native-sound/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-sound/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..3e95596
+Binary files /dev/null and b/node_modules/react-native-sound/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-sound/sound.js b/node_modules/react-native-sound/sound.js
+index c9bcbaf..6c52f26 100644
+--- a/node_modules/react-native-sound/sound.js
++++ b/node_modules/react-native-sound/sound.js
+@@ -4,7 +4,7 @@ var ReactNative = require('react-native');
+ var RNSound = ReactNative.NativeModules.RNSound;
+ var IsAndroid = RNSound.IsAndroid;
+ var IsWindows = RNSound.IsWindows;
+-var resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource");
++var resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource").default;
+ var eventEmitter = new ReactNative.NativeEventEmitter(RNSound);
+ 
+ var nextKey = 0;

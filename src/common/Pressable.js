@@ -41,7 +41,7 @@ const Pressable = ({ children, contentContainerStyle, pressedStyle, ...props }) 
 };
 
 Pressable.propTypes = {
-   ...RNPressable.propTypes,
+   children: PropTypes.node,
    contentContainerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
    pressedStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };

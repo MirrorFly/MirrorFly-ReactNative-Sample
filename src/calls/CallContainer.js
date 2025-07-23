@@ -108,7 +108,15 @@ const CallContainer = () => {
 
    const renderModalContent = () => {
       const content = (
-         <View style={[commonStyles.flex1, { marginTop: isPipMode ? 0 : insets?.top, overflow: 'hidden' }]}>
+         <View
+            style={[
+               commonStyles.flex1,
+               {
+                  paddingTop: isPipMode ? 0 : insets?.top,
+                  ...(Platform.OS === 'android' && { paddingBottom: isPipMode ? 0 : insets.bottom }),
+                  overflow: 'hidden',
+               },
+            ]}>
             {renderCallscreenBasedOnCallStatus}
             {callConversionData.status && callConversionPopUp}
             <CallModalToastContainer />

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
  * @property {TextStyle} contentContainerStyle
  */
 
-const Text = React.forwardRef(({ style = {}, ...props }, ref) => {
+const TextBase = ({ style = {}, ...props }, ref) => {
    const isRTL = I18nManager.isRTL;
    const fontFamily = useFontFamily();
 
@@ -61,12 +61,13 @@ const Text = React.forwardRef(({ style = {}, ...props }, ref) => {
          {props.children}
       </RNText>
    );
-});
+};
 
-Text.propTypes = {
+const Text = React.forwardRef(TextBase);
+
+TextBase.propTypes = {
    style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
    children: PropTypes.node,
-   contentContainerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
 export default Text;

@@ -174,8 +174,6 @@ function RecentChatScreen() {
 const styles = StyleSheet.create({
    tabBar: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
    },
    tabItem: {
       flex: 1,

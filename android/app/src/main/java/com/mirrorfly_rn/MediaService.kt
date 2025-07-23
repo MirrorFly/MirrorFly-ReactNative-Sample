@@ -738,7 +738,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     Log.d(name, "uploadUrl $bytesRead $uploadUrl")
                     // Upload the chunk
                     val (success, statusCode) = uploadChunk(
-                        uploadUrl,
+                        uploadUrl.toString(),
                         buffer.copyOf(bytesRead)
                     ) // Use only the read portion of the buffer
 
@@ -1058,7 +1058,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     }
 
                 }
-            val mediacontrol = MediaController(formatedPath, outputPath, compressListener)
+            val mediacontrol = MediaController(formatedPath!!, outputPath, compressListener)
             mediacontrol.processVideo()
         } catch (e: java.lang.Exception) {
             promise.reject("COMPRESSION_FAILED", "Compression failed: " + e.message, e)

@@ -193,8 +193,6 @@ export default ViewAllMedia;
 const styles = StyleSheet.create({
    mediaTabBar: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
    },
    mediaTabItem: {
       flex: 1,

@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { Linking, SafeAreaView, StatusBar, Text, View } from 'react-native';
+import { Linking, StatusBar, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { navigationRef } from './Navigation/rootNavigation';
 import StackNavigationPage from './Navigation/stackNavigation';
 import ApplicationColors from './config/appColors';
@@ -39,6 +40,8 @@ const linking = {
 };
 
 export function MirrorflyChatComponent() {
+   const insets = useSafeAreaInsets();
+
    React.useEffect(() => {
       const handleDeepLink = ({ url }) => {
          if (url) {
@@ -79,22 +82,28 @@ export function MirrorflyChatComponent() {
 
    if (!getAppInitStatus()) {
       return (
-         <SafeAreaView style={{ flex: 1, backgroundColor: ApplicationColors.headerBg }}>
+         <View
+            style={{
+               flex: 1,
+               backgroundColor: ApplicationColors.headerBg,
+               paddingTop: insets.top,
+               paddingBottom: insets.bottom,
+            }}>
             <View style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
                <Text> Mirrorfly Not Initialized</Text>
             </View>
-         </SafeAreaView>
+         </View>
       );
    }
 
    return (
       <>
          <StatusBar animated={true} backgroundColor={'#E5E5E5'} />
-         <SafeAreaView style={{ flex: 1, backgroundColor: '#E5E5E5' }}>
+         <View style={{ flex: 1, backgroundColor: '#E5E5E5', paddingTop: insets.top, paddingBottom: insets.bottom }}>
             <NavigationContainer linking={linking} independent={true} ref={navigationRef}>
                <StackNavigationPage />
             </NavigationContainer>
-         </SafeAreaView>
+         </View>
       </>
    );
 }

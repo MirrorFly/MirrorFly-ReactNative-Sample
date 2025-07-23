@@ -5,7 +5,7 @@ import React from 'react';
 import { Alert, Dimensions, Linking, Platform, StyleSheet, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
-import DocumentPicker from 'react-native-document-picker';
+import * as DocumentPicker from '@react-native-documents/picker';
 import FileViewer from 'react-native-file-viewer';
 import RNFS from 'react-native-fs';
 import HeicConverter from 'react-native-heic-converter';
@@ -595,14 +595,18 @@ export const validateFileSize = (size, mediaTypeFile) => {
 
 export const getAudioDuration = async path => {
    return new Promise((resolve, reject) => {
-      const sound = new Sound(path, Platform.OS === 'ios' ? '' : Sound.MAIN_BUNDLE, error => {
-         if (error) {
-            return mflog('Failed to load sound', error);
-         } else {
-            const duration = sound.getDuration();
-            return resolve(duration);
-         }
-      });
+      try {
+         const sound = new Sound(path, Platform.OS === 'ios' ? '' : Sound.MAIN_BUNDLE, error => {
+            if (error) {
+               return mflog('Failed to load sound', error);
+            } else {
+               const duration = sound.getDuration();
+               return resolve(duration);
+            }
+         });
+      } catch (error) {
+         mflog('Failed to load sound', error);
+      }
    });
 };
 
@@ -617,7 +621,7 @@ export const validation = extension => {
 
 export const handleDocumentPickSingle = async () => {
    try {
-      const result = await DocumentPicker.pickSingle({
+      const [result] = await DocumentPicker.pick({
          allowMultiSelection: false,
          type: documentAttachmentTypes,
          presentationStyle: 'fullScreen',
@@ -633,7 +637,7 @@ export const handleDocumentPickSingle = async () => {
 
 export const handleAudioPickerSingle = async () => {
    try {
-      let res = await DocumentPicker.pickSingle({
+      let [res] = await DocumentPicker.pick({
          type: [DocumentPicker.types.audio],
          presentationStyle: 'fullScreen',
          copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
@@ -662,7 +666,7 @@ export const openDocumentPicker = async () => {
             return;
          }
          // Extract directory path
-         const uriParts = file.fileCopyUri.split('/');
+         const uriParts = file.uri.split('/');
          uriParts.pop(); // Remove last part (file name)
          const correctedUri = uriParts.join('/') + '/' + file.name;
          // Create a new object to avoid modifying the original reference (good practice)
@@ -770,13 +774,13 @@ export const openLocation = async () => {
 };
 
 const getValidUri = response => {
-   let validUri = response.fileCopyUri;
+   let validUri = response.uri;
    try {
       validUri = decodeURI(validUri);
    } catch (error) {
       console.warn('Error decoding URI:', error);
    }
-   return validUri || response.fileCopyUri;
+   return validUri || response.uri;
 };
 
 export const handleAudioSelect = async () => {

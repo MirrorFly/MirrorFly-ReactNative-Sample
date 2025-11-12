@@ -19,6 +19,7 @@ import { mirrorflyRegister } from '../uikitMethods';
 import { COUNTRY_LIST_SCREEN, PROFILE_SCREEN, SETTINGS_STACK } from './constants';
 import { useDispatch } from 'react-redux';
 import { setModalContent, toggleModalContent } from '../redux/alertModalSlice';
+import useAndroidKeyboardPadding from '../hooks/useAndroidKeyboardPadding';
 
 const RegisterScreen = () => {
    const navigation = useNavigation();
@@ -30,6 +31,7 @@ const RegisterScreen = () => {
    const [mobileNumber, setMobileNumber] = React.useState('');
    const [isToastShowing, setIsToastShowing] = React.useState(false);
    const isNetworkConnected = useNetworkStatus();
+   const androidKeyboardPadding = useAndroidKeyboardPadding();
 
    const termsHandler = () => {
       Linking.openURL('https://www.mirrorfly.com/terms-and-conditions.php');
@@ -118,7 +120,7 @@ const RegisterScreen = () => {
    };
 
    return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={{ flex: 1, paddingBottom: androidKeyboardPadding }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <View
             style={[
                commonStyles.flex1,

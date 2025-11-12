@@ -23,6 +23,7 @@ import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
 import { useAnySelectedChatMessages, useEditMessageId, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { RECENTCHATSCREEN } from './constants';
+import useAndroidKeyboardPadding from '../hooks/useAndroidKeyboardPadding';
 
 function ConversationScreen({ chatUser = '' }) {
    const { params: { jid: _jid = '' } = {} } = useRoute();
@@ -36,6 +37,7 @@ function ConversationScreen({ chatUser = '' }) {
    const navigation = useNavigation();
    const isAnySelected = useAnySelectedChatMessages(userId);
    const editMessageId = useEditMessageId();
+   const androidKeyboardPadding = useAndroidKeyboardPadding();
 
    React.useEffect(() => {
       SDK.updateRecentChatUnreadCount(currentChatUser);
@@ -94,7 +96,7 @@ function ConversationScreen({ chatUser = '' }) {
       <KeyboardAvoidingView
          enabled={Platform.OS === 'ios'}
          keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
-         style={styles.container}
+         style={[styles.container, { paddingBottom: androidKeyboardPadding }]}
          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
          {renderChatHeader}
          <ImageBackground

@@ -36,6 +36,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import { mediaCompress, sdkLog } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
+import useAndroidKeyboardPadding from '../hooks/useAndroidKeyboardPadding';
 
 function MediaPreView() {
    const chatUser = getCurrentChatUser();
@@ -53,6 +54,7 @@ function MediaPreView() {
    const [loadingMessage, setLoadingMessage] = React.useState('Compressing');
    const [isActive, setIsActive] = React.useState(false);
    const abortControllerRef = React.useRef(null);
+   const androidKeyboardPadding = useAndroidKeyboardPadding();
 
    useFocusEffect(
       React.useCallback(() => {
@@ -227,7 +229,9 @@ function MediaPreView() {
    }, [activeIndex, componentSelectedImages]);
 
    return (
-      <KeyboardAvoidingView style={commonStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView
+         style={[commonStyles.flex1, { paddingBottom: androidKeyboardPadding }]}
+         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <View onPress={Keyboard.dismiss} style={styles.container}>
             <View
                style={[

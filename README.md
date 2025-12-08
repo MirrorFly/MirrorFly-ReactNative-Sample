@@ -247,15 +247,17 @@ MirrorFly offers full freedom with the hosting options:
 **Cloud:** Host your client on MirrorFly’s multi-tenant cloud servers.   
 [Check out our multi-tenant cloud hosting](https://www.mirrorfly.com/multi-tenant-chat-for-saas.php)
 
-# **📱 Mobile Client**
+## Mobile Client
 
-MirrorFly offers a fully-built client **SafeTalk** that is available in:  
-![Rocket.Chat on Apple App Store][image4] ![Rocket.Chat on Google Play][image5]
+MirrorFly offers a fully-built client SafeTalk that is available in:
+- iOS
+- Android
+
 
 # **📚 Learn More**
 
 * [Developer Documentation](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/)  
-* [MirrorFly React Native](https://www.mirrorfly.com/react-native-chat-sdk.php) Solution  
+* [MirrorFly React Native Solution](https://www.mirrorfly.com/react-native-chat-sdk.php)   
 * [MirrorFly React Native Sample App](https://github.com/MirrorFly/MirrorFly-ReactNative-Sample)  
 * [MirrorFly React Native UI Kit](https://www.mirrorfly.com/docs/uikit/web/quick-start/)  
 * [Product Tutorials](https://www.mirrorfly.com/tutorials/)  

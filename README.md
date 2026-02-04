@@ -97,6 +97,13 @@ import { SDK } from "mirrorfly-reactnative-sdk";
 
 ## [React Native Messaging SDK Initialization](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#initialize-the-react-native-messaging-sdk)
 
+Before you initialize the real-time React Native Chat SDK, make sure you have the data that tracks changes in the client app’s connection status.
+
+Paste your license key into the licensekey parameter, then use the method below to pass this data to the SDK for processing.
+In your app file (e.g., App.tsx or App.js), import the SDK and call the initializeSDK function with the required parameters.
+
+
+
 ```js
 const initializeObj = {
   apiBaseUrl: `API_URL`,

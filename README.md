@@ -161,6 +161,11 @@ Step 2: Download the iOS files from the link above, locate the required files, a
 
 ## [Register User](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#register-user)
 
+Step 1: You can use the below given method to register a new user.
+
+Step 2: After you register, the system provides a username and password. Use these credentials to connect to the server through the [connect method](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#connect-to-mirrorfly-server).
+
+
 ```js
 const registerObject = {
   userIdentifier,
@@ -189,9 +194,27 @@ await SDK.register(registerObject);
 
 ## [Connect to MirrorFly Server](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#connect-to-mirrorfly-server)
 
+Step 1: Use the credentials provided during registration to initiate a connection to the server.
+
+Step 2: When the connection initializes successfully, the server responds with a statusCode value of 200. If the connection attempt fails, the system raises an execution error.
+
+Step 3: You can monitor all connection state changes by implementing the connectionListener callback.
+
+Step 4: If the server connection fails at any point, the callback returns the corresponding error message
+
 ```js
 await SDK.connect(`USERNAME`, `PASSWORD`);
 ```
+
+The SDK.connect() method establishes an authenticated session between the client application and the server.
+The method accepts two parameters: the username and password of the registered user.
+
+It runs asynchronously. The await keyword pauses execution until the connection attempt completes.
+
+If the credentials are valid and the server accepts the request, the function resolves successfully.
+
+If the connection fails due to invalid credentials, network issues, or server-side errors, the function throws an execution error that you can catch using a try-catch block.
+
 
 #### [**Sample Response:**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#sample-response-1)
 
@@ -204,11 +227,28 @@ await SDK.connect(`USERNAME`, `PASSWORD`);
 
 ## [Send a Message](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#send-a-message)
 
+Finally, to send a message to another user you can use the below given method,
+
+
 ```js
 await SDK.sendTextMessage(`TO_USER_JID`, `MESSAGE_BODY`, `MESSAGE_ID`, `REPLY_TO`);
 ```
 
+The sendTextMessage function sends a text payload to a specific user within the messaging system.
+
+- **TO_USER_JID** identifies the recipient using their unique Jabber ID.
+- **MESSAGE_BODY** contains the actual text content you want to deliver.
+- **MESSAGE_ID** is a unique identifier that the client generates to track the message.
+- **REPLY_TO** is optional. When provided, it references the original message ID that you want to reply to.
+- The method runs asynchronously.
+- When the send operation succeeds, the promise resolves.
+- If the operation fails due to network issues, invalid JID, or server-side errors, it throws an exception that you can capture using a try-catch block.
+
+
 ## [Receive a Message](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#receive-a-message)
+
+To receive incoming messages, implement the messageListener callback. This function triggers whenever the client receives a new message or a related event in both one-to-one and group conversations. Register the callback during SDK initialization by adding the following method to your setup configuration.
+
 
 ```js
 function messageListener(response) {
@@ -218,35 +258,177 @@ function messageListener(response) {
 
 # **Voice & Video Calling Integration**
 
-## [Make a voice call](https://www.mirrorfly.com/docs/audio-video/reactnative/making-a-call#make-a-voice-call)
+Note: Before making the call, make sure you have implemented the helper object.
 
-```js
+
+# Voice & Video Calling SDK Guide
+
+This guide explains how to initiate, receive, answer, and manage **voice
+and video calls** using the SDK.
+
+------------------------------------------------------------------------
+
+## Make a Voice Call
+
+You can initiate a voice call by passing the callee user JID to the
+`makeVoiceCall` method.
+
+After the call initializes successfully, the `callStatusListener`
+callback is triggered and provides real-time updates on the callee call
+status.
+
+``` javascript
 await SDK.makeVoiceCall(['USER1_JID']);
 ```
 
-### [**Make a video call**](https://www.mirrorfly.com/docs/audio-video/reactnative/making-a-call#make-a-video-call)
+### Response Format
 
-```js
+``` json
+{
+  "statusCode": 200,
+  "message": "",
+  "callType": "audio",
+  "roomId": ""
+}
+```
+
+------------------------------------------------------------------------
+
+## Make a Video Call
+
+Initiate a video call by passing the callee user JID to the
+`makeVideoCall` method.
+
+After the call initializes successfully, the `callStatusListener`
+callback is triggered and provides the callee call status.
+
+> **Caution:** If one-to-one calling is not enabled for your plan, the
+> method throws a `403` exception.
+
+``` javascript
 await SDK.makeVideoCall(['USER1_JID']);
 ```
 
-### [**Answer a call**](https://www.mirrorfly.com/docs/audio-video/reactnative/making-a-call#answer-a-call)
+### Response Format
 
-```js
+``` json
+{
+  "statusCode": 200,
+  "message": "",
+  "callType": "video",
+  "roomId": ""
+}
+```
+
+------------------------------------------------------------------------
+
+## Response Parameters
+
+### User Track Listener
+
+Register a `userTrackListener` callback in the caller client to receive
+user media tracks.
+
+When you initiate a call, the callback returns: - Your media track - The
+callee's media track
+
+Use the `localUser` and `userJid` parameters to identify which track
+belongs to which user.
+
+The callback provides both **audio** and **video** tracks.\
+Pass each track object to the appropriate audio or video element based
+on its type.
+
+------------------------------------------------------------------------
+
+## Receive Incoming Call
+
+Register the `incomingCallListener` callback in the callee client to
+receive incoming calls.
+
+When another user initiates a call, the callee receives the call data
+through this callback.
+
+### Callback Response Argument Structure
+
+``` json
+{
+  "allUsers": ["USER1_JID", "USER2_JID"],
+  "callMode": "onetoone",
+  "callTime": 1681905421215,
+  "callType": "audio | video",
+  "from": "USER_JID | FROM_USER_JID",
+  "groupId": null,
+  "localUser": false,
+  "roomId": "wmupbheao",
+  "roomLink": "ndy-bmkb-eui",
+  "status": "calling",
+  "to": "FROM_USER_JID",
+  "toUsers": ["USER_JID"],
+  "userDetails": {},
+  "userJid": "FROM_USER_JID",
+  "usersStatus": [{}]
+}
+```
+
+------------------------------------------------------------------------
+
+## Answer a Call
+
+To answer an incoming call, use the `answerCall` method.
+
+``` javascript
 await SDK.answerCall();
 ```
 
-### [**End a call**](https://www.mirrorfly.com/docs/audio-video/reactnative/making-a-call#end-a-call)
+### Response Format
 
-```js
+``` json
+{
+  "statusCode": 200,
+  "message": ""
+}
+```
+
+------------------------------------------------------------------------
+
+## End a Call
+
+To end an active call, use the `endCall` method.
+
+``` javascript
 await SDK.endCall();
 ```
 
-### [**Decline a call**](https://www.mirrorfly.com/docs/audio-video/reactnative/making-a-call#decline-a-call)
+### Response Format
 
-```js
+``` json
+{
+  "statusCode": 200,
+  "message": ""
+}
+```
+
+------------------------------------------------------------------------
+
+## Decline a Call
+
+Use the `declineCall` method to decline any incoming call.
+
+``` javascript
 await SDK.declineCall();
 ```
+
+### Response Format
+
+``` json
+{
+  "statusCode": 200,
+  "message": ""
+}
+```
+
+
 
 # **☁️ Deployment Models - Self-hosted and Cloud**
 

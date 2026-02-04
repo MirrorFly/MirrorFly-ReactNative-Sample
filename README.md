@@ -152,6 +152,13 @@ await SDK.initializeSDK(initializeObj);
 
 [Download](https://s3.ap-south-1.amazonaws.com/app.mirrorfly.com/rn_device_id_dependency.zip)
 
+
+Step 1: Download the Android files from the link above, locate the required files, and copy them into the android/app/src/main/java/com directory.
+
+Step 2: Download the iOS files from the link above, locate the required files, and add them to your project in Xcode using Add Files to [Your Project]. Then follow the steps below.
+
+
+
 ## [Register User](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#register-user)
 
 ```js

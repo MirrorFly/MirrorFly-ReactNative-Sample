@@ -50,7 +50,7 @@ newArchEnabled=false  # Use 'true' to enable, 'false' to disable
 Gradle reads this property during configuration, and React Native’s build scripts adjust the native modules and rendering pipeline accordingly.
 
 
-### [**Getting Started**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#things-to-be-noted-before-you-get-started)
+### [**Getting Started**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#things-to-be-noted-before-you-get-started)
 
 Step 1: Register [here](https://www.mirrorfly.com/contact-sales.php) to get a MirrorFly User account.  
 Step 2: [Login](https://console.mirrorfly.com/) to your Account  
@@ -61,7 +61,7 @@ Step 3: Get the License key from the application Info’ section
   
 # **Real-time Chat Integration**
 
-## [Integrate the Chat SDK](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#integrate-the-chat-sdk)
+## [Integrate the Chat SDK](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#integrate-the-chat-sdk)
 
 **Step 1:** Update all your packages.json files.  
 **Step 2:** Check your package files for any duplicates if the app isn’t working on iOS.
@@ -80,7 +80,7 @@ Step 4: Import the SDK into your application where you want
 import { SDK } from "mirrorfly-reactnative-sdk";
 ```
 
-## [NPM Package Addition](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#adding-npm-package-dependencies-to-integrate-the-chat-sdk)
+## [NPM Package Addition](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#adding-npm-package-dependencies-to-integrate-the-chat-sdk)
 
 ```json
 {
@@ -95,7 +95,7 @@ import { SDK } from "mirrorfly-reactnative-sdk";
 }
 ```
 
-## [React Native Messaging SDK Initialization](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#initialize-the-react-native-messaging-sdk)
+## [React Native Messaging SDK Initialization](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#initialize-the-react-native-messaging-sdk)
 
 Before you initialize the real-time React Native Chat SDK, make sure you have the data that tracks changes in the client app’s connection status.
 
@@ -114,7 +114,7 @@ const initializeObj = {
 await SDK.initializeSDK(initializeObj);
 ```
 
-### [**Sandbox Details**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#sandbox-details)
+### [**Sandbox Details**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#sandbox-details)
 
 <img  src="https://www.mirrorfly.com/docs/assets/images/license-key-a1173e922ebff14b6ae1a2428f822eec.png" data-canonical-src="https://www.mirrorfly.com/docs/assets/images/license-key-a1173e922ebff14b6ae1a2428f822eec.png" width="100%"  alt=""/>
 
@@ -139,7 +139,7 @@ const initializeObj = {
 await SDK.initializeSDK(initializeObj);
 ```
 
-#### [**Example Response**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#example-response)
+#### [**Example Response**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#example-response)
 
 ```json
 {
@@ -159,7 +159,7 @@ Step 2: Download the iOS files from the link above, locate the required files, a
 
 
 
-## [Register User](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#register-user)
+## [Register User](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#register-user)
 
 Step 1: You can use the below given method to register a new user.
 

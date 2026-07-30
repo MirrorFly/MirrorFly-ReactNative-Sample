@@ -12,7 +12,7 @@ This repository walks you through the steps to install and initialize SDK into y
 
 MirrorFly helps build omni-channel communication apps for any kind of business
 
-**💬 [In-app Messaging](https://www.mirrorfly.com/chat-api-solution.php)** - Connect users individually or as groups via instant messaging features.  
+**💬 [In-app Messaging](https://www.mirrorfly.com/chat/)** - Connect users individually or as groups via instant messaging features.  
 **🎯 [HD Video Calling](https://www.mirrorfly.com/video-call-solution.php)**- Engage users over face-to-face conversations anytime, and from anywhere.   
 **🦾 [HQ Voice Calling](https://www.mirrorfly.com/voice-call-solution.php)** - Deliver crystal clear audio calling experiences with latency as low as 3ms.   
 🤖 [**AI Voice Agent**](https://www.mirrorfly.com/conversational-ai/voice-agent/) - Build custom AI voicebots that can understand, act and respond to user questions.   
@@ -21,7 +21,7 @@ MirrorFly helps build omni-channel communication apps for any kind of business
 
 ### **⚒️React Native SDK For Android & iOS**
 
-### [**Requirements**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#requirements)
+### [**Requirements**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/)
 
 The requirements for chat SDK for React Native Mobile App are:
 
@@ -66,7 +66,7 @@ Step 3: Get the License key from the application Info’ section
 **Step 1:** Update all your packages.json files.  
 **Step 2:** Check your package files for any duplicates if the app isn’t working on iOS.
 
-#### [**Integrate Using Npm package**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#integrate-using-npm-package)
+#### [**Integrate Using Npm package**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#integrate-using-npm-package)
 
 Step 3: Install MirrorFly SDK in your React Native app.
 
@@ -148,7 +148,7 @@ await SDK.initializeSDK(initializeObj);
 }
 ```
 
-### [**Device ID Module**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#device-id-module)
+### [**Device ID Module**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#device-id-module)
 
 [Download](https://s3.ap-south-1.amazonaws.com/app.mirrorfly.com/rn_device_id_dependency.zip)
 
@@ -179,7 +179,7 @@ const registerObject = {
 await SDK.register(registerObject);
 ```
 
-#### [**Sample Response:**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#sample-response)
+#### [**Sample Response:**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#sample-response)
 
 ```json
 {
@@ -192,7 +192,7 @@ await SDK.register(registerObject);
 }
 ```
 
-## [Connect to MirrorFly Server](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#connect-to-mirrorfly-server)
+## [Connect to MirrorFly Server](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#connect-to-mirrorfly-server)
 
 Step 1: Use the credentials provided during registration to initiate a connection to the server.
 
@@ -216,7 +216,7 @@ If the credentials are valid and the server accepts the request, the function re
 If the connection fails due to invalid credentials, network issues, or server-side errors, the function throws an execution error that you can catch using a try-catch block.
 
 
-#### [**Sample Response:**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#sample-response-1)
+#### [**Sample Response:**](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#sample-response-1)
 
 ```json
 {
@@ -225,7 +225,7 @@ If the connection fails due to invalid credentials, network issues, or server-si
 }
 ```
 
-## [Send a Message](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#send-a-message)
+## [Send a Message](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#send-a-message)
 
 Finally, to send a message to another user you can use the below given method,
 
@@ -245,7 +245,7 @@ The sendTextMessage function sends a text payload to a specific user within the 
 - If the operation fails due to network issues, invalid JID, or server-side errors, it throws an exception that you can capture using a try-catch block.
 
 
-## [Receive a Message](https://www.mirrorfly.com/docs/chat/reactnative/quick-start#receive-a-message)
+## [Receive a Message](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/#receive-a-message)
 
 To receive incoming messages, implement the messageListener callback. This function triggers whenever the client receives a new message or a related event in both one-to-one and group conversations. Register the callback during SDK initialization by adding the following method to your setup configuration.
 
@@ -450,11 +450,11 @@ MirrorFly offers a fully-built client SafeTalk that is available in:
 # **📚 Learn More**
 
 * [Developer Documentation](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/)  
-* [MirrorFly React Native Solution](https://www.mirrorfly.com/react-native-chat-sdk.php)   
+* [MirrorFly React Native Solution](https://www.mirrorfly.com/chat/sdk/react-native/)   
 * [MirrorFly React Native Sample App](https://github.com/MirrorFly/MirrorFly-ReactNative-Sample)  
 * [MirrorFly React Native UI Kit](https://www.mirrorfly.com/docs/uikit/web/quick-start/)  
-* [Product Tutorials](https://www.mirrorfly.com/tutorials/)  
-* [See who's using MirrorFly](https://www.mirrorfly.com/chat-use-cases.php)
+* [React Native Video Call Development Guide](https://www.mirrorfly.com/blog/react-native-video-call/)  
+* [See who's using MirrorFly](https://www.mirrorfly.com/chat/solutions/)
 
 # **🧑‍💻 Hire Experts**
 

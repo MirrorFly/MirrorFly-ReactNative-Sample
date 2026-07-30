@@ -451,8 +451,7 @@ MirrorFly offers a fully-built client SafeTalk that is available in:
 # **📚 Learn More**
 
 * [Developer Documentation](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/)  
-* [MirrorFly React Native Solution](https://www.mirrorfly.com/chat/sdk/react-native/)   
-* [MirrorFly React Native Sample App](https://github.com/MirrorFly/MirrorFly-ReactNative-Sample)  
+* [MirrorFly React Native Solution](https://www.mirrorfly.com/chat/sdk/react-native/)    
 * [MirrorFly React Native UI Kit](https://www.mirrorfly.com/docs/uikit/web/quick-start/)  
 * [React Native Video Call Development Guide](https://www.mirrorfly.com/blog/react-native-video-call/)  
 * [See who's using MirrorFly](https://www.mirrorfly.com/chat/solutions/)
